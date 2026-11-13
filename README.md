@@ -48,6 +48,17 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 
 **Automatic measurement:** the **Live Monitor** connects standard **Bluetooth medical devices** (heart-rate straps, pulse oximeters, BP cuffs, thermometers, scales) and **suits/wearables over USB or Wi-Fi** using an open JSON-lines protocol. An ESP32 reference sketch and an EVA simulator with fault injection are included. See **[docs/SENSORS.md](docs/SENSORS.md)**.
 
+### Project documents
+
+| Document | What's in it |
+|---|---|
+| [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md) | Problem, personas, user stories, functional & non-functional requirements, metrics, risks |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Full architecture: layers, flows, data model, security model, decisions |
+| [ARCHITECTURE_ESSENTIALS.md](ARCHITECTURE_ESSENTIALS.md) | One-page architecture summary |
+| [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md) | Rules and commands for AI coding agents and contributors |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Netlify or Cloudflare Pages |
+| [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Accounts setup · sensor integration |
+
 ---
 
 ## Features
