@@ -6,7 +6,8 @@ import { useTriage } from '@/hooks/useMission';
 import { LEVEL_META, maxLevel } from '@/engine/status';
 import type { StatusLevel } from '@/types';
 import { cn } from '@/utils';
-import { HazardBadges, PageHeader, Panel, StatusBadge } from '@/components/ui';
+import { ExternalLink, HazardBadges, PageHeader, Panel, StatusBadge } from '@/components/ui';
+import { resourceById } from '@/data/resources';
 import { Breathing } from './Cognitive';
 
 function CardDetail({ card, level }: { card: GuidanceCard; level: StatusLevel }) {
@@ -57,6 +58,22 @@ function CardDetail({ card, level }: { card: GuidanceCard; level: StatusLevel })
             </p>
           )}
           <p className="muted mt-6 text-xs">Source: {card.source}</p>
+          {card.links && card.links.length > 0 && (
+            <div className="mt-4 rounded-xl bg-white/5 p-3">
+              <h2 className="eyebrow mb-2">Further reading: Space Apps resources</h2>
+              <ul className="space-y-1 text-sm">
+                {card.links.map((id) => {
+                  const r = resourceById(id);
+                  return (
+                    <li key={id}>
+                      <span className="muted mr-1 text-xs font-semibold">{r.org}</span>
+                      <ExternalLink href={r.url}>{r.title}</ExternalLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </Panel>
         <div className="flex flex-col gap-5">
           {related.length > 0 && (

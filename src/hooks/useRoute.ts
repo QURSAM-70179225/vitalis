@@ -18,14 +18,15 @@ export type PageId =
   | 'settings'
   | 'camera'
   | 'live'
-  | 'console';
+  | 'console'
+  | 'about';
 
 export interface Route {
   page: PageId;
   param?: string;
 }
 
-const PAGES: PageId[] = ['dashboard', 'checkin', 'trends', 'system', 'cognitive', 'guidance', 'schedule', 'crew', 'ground', 'achievements', 'settings', 'camera', 'live', 'console'];
+const PAGES: PageId[] = ['dashboard', 'checkin', 'trends', 'system', 'cognitive', 'guidance', 'schedule', 'crew', 'ground', 'achievements', 'settings', 'camera', 'live', 'console', 'about'];
 
 export function parseHash(hash: string): Route {
   const [page, param] = hash.replace(/^#\/?/, '').split('/');

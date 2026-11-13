@@ -6,7 +6,8 @@ import { ENVIRONMENT_LIST, commDelaySeconds, formatDelay } from '@/data/environm
 import { HAZARD_LIST } from '@/data/hazards';
 import type { EnvironmentId, MissionEnvironment } from '@/types';
 import { cn } from '@/utils';
-import { HazardIcon } from '@/components/ui';
+import { ExternalLink, HazardIcon } from '@/components/ui';
+import { DISCLAIMER_ENDORSEMENT } from '@/data/resources';
 import { Logo } from '@/components/Layout';
 import { navigate } from '@/hooks/useRoute';
 
@@ -110,6 +111,11 @@ export function Onboarding() {
               </div>
               <p className="mt-4 flex items-center gap-2 text-xs text-slate-400">
                 <WifiOff className="h-4 w-4" aria-hidden /> Works with no network. Data stays on this device in IndexedDB.
+              </p>
+              <p className="mt-6 max-w-xl text-[11px] leading-relaxed text-slate-400">
+                {DISCLAIMER_ENDORSEMENT} Sources: <ExternalLink href="https://www.nasa.gov/hrp/hazards/" className="text-[11px]">NASA HRP hazards</ExternalLink>,{' '}
+                <ExternalLink href="https://www.nasa.gov/hrp/risks/" className="text-[11px]">HRP risks</ExternalLink>,{' '}
+                <ExternalLink href="https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp" className="text-[11px]">CSA radiation monitoring</ExternalLink>.
               </p>
             </div>
             <div className="panel panel-pad">

@@ -44,7 +44,7 @@ flowchart LR
 | Offline | Hand-written service worker (`public/sw.js`) + Vite plugin injecting the precache list |
 | Backend (optional) | Supabase: Auth, Postgres with RLS, Realtime (postgres_changes + broadcast) |
 | Sensors | Web Bluetooth (GATT), Web Serial, WebSocket |
-| Tests | Vitest (84 tests), SQL RLS tests on plain PostgreSQL |
+| Tests | Vitest (87 tests), SQL RLS tests on plain PostgreSQL |
 | Routing | Minimal hash router (`src/hooks/useRoute.ts`) — works on any static host, no rewrites |
 
 ---
@@ -222,7 +222,7 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 
 | Layer | How |
 |---|---|
-| Engine, devices, cloud mappers | `npm test` (Vitest, 84 tests, 8 files) |
+| Engine, devices, cloud mappers | `npm test` (Vitest, 87 tests, 9 files) |
 | Database security | `supabase/tests` on PostgreSQL 16 with an auth stub |
 | UI flows | Playwright scripts used during development: demo sweep, new-user flow, tour, offline reload, live alarms, console messaging, and accounts mode against a mocked Supabase API |
 | Quality gates | `npm run typecheck`, `npm run lint`, `npm run build` |

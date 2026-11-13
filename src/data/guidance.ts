@@ -15,6 +15,8 @@ export interface GuidanceCard {
   tips?: string[];
   escalate?: string;
   source: string;
+  /** Official Space Apps resources for further reading (see data/resources.ts). */
+  links?: ('hrp-hazards' | 'hrp-risks' | 'hrp-research' | 'csa-radiation' | 'csa-science')[];
 }
 
 const cards: GuidanceCard[] = [
@@ -38,6 +40,7 @@ const cards: GuidanceCard[] = [
     tips: ['Use the harness and bungees to spread load across your shoulders and hips.', 'Log loads so the CMO can track progression.', 'Train 6 days per week. Take a full rest day if you are sore or ill.'],
     escalate: 'Sharp joint pain, a "pop", or sudden back or flank pain. Stop and tell the CMO.',
     source: 'Loehr JA et al., Aerosp Med Hum Perform 2015; NASA HRP Bone & Muscle Evidence Reports',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'aerobic',
@@ -56,6 +59,7 @@ const cards: GuidanceCard[] = [
     ],
     tips: ['Interval days and steady days can alternate.', 'Drink 250–500 mL during the session.'],
     source: 'Ploutz-Snyder LL et al. 2018 (integrated resistance and aerobic training study)',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'nutrition-bone',
@@ -74,6 +78,7 @@ const cards: GuidanceCard[] = [
     ],
     tips: ['Log meals for 3 days if body mass is trending down.'],
     source: 'Smith SM, Zwart SR — Nutritional Biochemistry of Space Flight; NASA HRP Nutrition Evidence',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'hydration',
@@ -110,6 +115,7 @@ const cards: GuidanceCard[] = [
     ],
     tips: ['Melatonin and hypnotics only per flight surgeon direction.'],
     source: 'Barger LK et al., Lancet Neurol 2014; NASA Lighting Countermeasures (ISS SSLA)',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'breathing',
@@ -139,6 +145,7 @@ const cards: GuidanceCard[] = [
       'Use the Private Psychological Conference (PPC) with BHP ops at any time. It is confidential.',
     ],
     source: 'NASA HRP — Risk of Adverse Cognitive or Behavioral Conditions; Antarctic and analog studies',
+    links: ['hrp-hazards', 'hrp-research'],
   },
   {
     id: 'workload',
@@ -155,6 +162,7 @@ const cards: GuidanceCard[] = [
       'Raise schedule conflicts with the Commander early.',
     ],
     source: 'Basner M & Dinges DF 2011; NASA Fatigue Management guidance',
+    links: ['hrp-research'],
   },
   {
     id: 'radiation-shelter',
@@ -173,7 +181,8 @@ const cards: GuidanceCard[] = [
       'Afterwards: report any nausea, vomiting, skin redness or fatigue. The CMO may draw blood for a CBC.',
     ],
     escalate: 'Nausea or vomiting within hours of exposure suggests a significant dose. Contact the flight surgeon.',
-    source: 'NASA-STD-3001 Vol. 1 Rev B; Orion SPE shelter concept (Artemis); NOAA SWPC',
+    source: 'NASA-STD-3001 Vol. 1 Rev B; Orion SPE shelter concept (Artemis); NOAA SWPC; CSA — Monitoring Radiation for Astronaut Health (2026)',
+    links: ['csa-radiation', 'hrp-hazards'],
   },
   {
     id: 'motion-sickness',
@@ -211,6 +220,7 @@ const cards: GuidanceCard[] = [
     tips: ['Use your "space anticipation glasses" (stronger plus lenses) if prescribed.', 'Keep cabin CO₂ low and limit salt.'],
     escalate: 'Sudden vision loss or a severe headache is an emergency.',
     source: 'NASA HRP — Risk of SANS Evidence Report (Lee AG, Mader TH et al.)',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'bp-recheck',
@@ -261,6 +271,7 @@ const cards: GuidanceCard[] = [
       'Report persistent headaches to the CMO. The crew can request increased scrubber operation.',
     ],
     source: 'Law J et al. 2014 (CO₂ and headaches on ISS); NASA SMAC limits',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'infection',
@@ -303,6 +314,7 @@ const cards: GuidanceCard[] = [
     steps: ['Adopt a fetal "tuck" position for 10 minutes to relieve the discs.', 'Do core-stability exercises daily.', 'Use an analgesic per the medical checklist if needed.'],
     escalate: 'Sudden severe or one-sided flank pain (kidney stone?), or numbness or weakness in the legs.',
     source: 'Sayson JV & Hargens AR 2008; NASA HRP Intervertebral Disc risk',
+    links: ['hrp-research', 'hrp-risks'],
   },
   {
     id: 'emergency-cardio',

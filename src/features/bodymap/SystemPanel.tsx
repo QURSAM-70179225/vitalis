@@ -9,7 +9,8 @@ import { useApp } from '@/store/useApp';
 import { useCrewData } from '@/hooks/useMission';
 import { formatValue } from '@/utils/units';
 import { AlertCard } from '@/components/AlertCard';
-import { HazardBadges, Sparkline, StatusBadge } from '@/components/ui';
+import { ExternalLink, HazardBadges, Sparkline, StatusBadge } from '@/components/ui';
+import { resourceById } from '@/data/resources';
 
 export function SystemPanel({ id, triage, showLink = true }: { id: SystemId; triage: TriageResult; showLink?: boolean }) {
   const sys = SYSTEMS[id];
@@ -37,7 +38,12 @@ export function SystemPanel({ id, triage, showLink = true }: { id: SystemId; tri
       <section>
         <h3 className="eyebrow mb-1">How spaceflight affects it</h3>
         <p className="text-sm">{sys.spaceflightEffects}</p>
-        <p className="muted mt-1 text-xs">NASA HRP risk: {sys.hrpRisk}</p>
+        <p className="muted mt-1 text-xs">
+          NASA HRP risk: {sys.hrpRisk} ·{' '}
+          <ExternalLink href={resourceById('hrp-risks').url} className="text-xs">
+            Risks of Human Spaceflight
+          </ExternalLink>
+        </p>
       </section>
 
       {sys.indicators.length > 0 && (

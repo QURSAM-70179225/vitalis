@@ -21,6 +21,7 @@ import {
   X,
   Cloud,
   CloudOff,
+  Library,
   MonitorDot,
   RefreshCw,
   type LucideIcon,
@@ -51,10 +52,11 @@ export const NAV: NavItem[] = [
   { id: 'ground', label: 'Ground Link', icon: Satellite },
   { id: 'achievements', label: 'Achievements', icon: Award },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
+  { id: 'about', label: 'About & Sources', icon: Library },
 ];
 
 const CONSOLE_ITEM: NavItem = { id: 'console', label: 'Ground Console', icon: MonitorDot };
-const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'crew', 'guidance', 'settings'];
+const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'crew', 'guidance', 'settings', 'about'];
 
 /** Navigation for the current account: Mission Control sees the console, not personal health pages. */
 export function useNav(): NavItem[] {

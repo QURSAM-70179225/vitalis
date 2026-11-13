@@ -16,6 +16,7 @@ import { formatDelay } from '@/data/environments';
 import { formatValue } from '@/utils/units';
 import { cn } from '@/utils';
 import { BodyMap } from '@/features/bodymap/BodyMap';
+import { RadiationPanel } from '@/features/radiation/RadiationPanel';
 import { SystemPanel } from '@/features/bodymap/SystemPanel';
 import { AlertCard } from '@/components/AlertCard';
 import { Disclaimer, Drawer, HazardIcon, Panel, ProgressRing, Sparkline, StatusBadge, readinessColor } from '@/components/ui';
@@ -147,6 +148,11 @@ export function Dashboard() {
               </p>
             )}
           </Panel>
+        </div>
+
+        {/* Radiation exposure (CSA radiation monitoring resource) */}
+        <div className="lg:col-span-12">
+          <RadiationPanel series={series.radiationDose ?? []} env={env} />
         </div>
 
         {/* Hazard exposure strip */}

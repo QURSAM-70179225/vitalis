@@ -188,12 +188,14 @@ export const THRESHOLDS: Record<IndicatorId, ThresholdConfig> = {
   radiationDose: {
     // Source: Bands are multiples of the environment's typical daily dose. NASA-STD-3001 Rev B (2022)
     // career limit 600 mSv; 30-day BFO limit 250 mGy-Eq. A >4× spike indicates a probable SPE.
+    // Daily personal-dosimeter monitoring follows the approach described in CSA, "Monitoring Radiation
+    // for Astronaut Health" (2026): https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp
     bands: { monHigh: 2, actHigh: 4, critHigh: 8 },
     mode: 'envScaled',
     worse: 'high',
     baseline: false,
     minSd: 0.1,
-    source: 'NASA-STD-3001 Vol. 1 Rev B (2022) radiation limits; NOAA SWPC S-scale',
+    source: 'NASA-STD-3001 Vol. 1 Rev B (2022) radiation limits; NOAA SWPC S-scale; CSA Monitoring Radiation for Astronaut Health (2026)',
   },
   reactionTime: {
     // Source: PVT literature (Basner & Dinges, Sleep 2011): well-rested mean RT ~230–300 ms.

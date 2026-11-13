@@ -87,6 +87,8 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **FR-20** | Offline sync | Local-first writes; outbox survives reloads; uploads automatically on reconnect; status badge with pending count. | ✅ (mocked API) |
 | **FR-21** | Live sensor monitoring | Bluetooth GATT health profiles; USB/Wi-Fi suit telemetry (JSON lines); simulator with fault injection; debounced alarms; 1-min aggregates; check-in auto-fill. | ✅ (simulator, parsers) 🧪 (real devices) |
 | **FR-22** | Ground Console | Crew cards with live sensor strips; realtime act/critical alert feed with acknowledge; per-crew messages; packets with PDF. | ✅ (demo + mocked API) 🧪 (live Realtime) |
+| **FR-24** | Radiation exposure summary | Dashboard panel: today's dose (× environment typical), mission total vs NASA 600 mSv career limit with progress bar, peak day, days left at the current 7-day rate; CSA radiation-monitoring resource linked. | ✅ |
+| **FR-25** | Sources & non-endorsement | About & Sources page lists the 5 official Space Apps resources (NASA HRP hazards, risks, ongoing research; CSA radiation monitoring; CSA science in space) with how each is used, Benefits on Earth, and a non-endorsement statement; guides and body-system panels link to the relevant resource. | ✅ |
 | **FR-23** | Settings & data | Units, high contrast, reduced motion, threshold editing, passcode lock, export/import/wipe, invite codes, sign out. | ✅ |
 
 ## 7. Non-functional requirements
@@ -99,7 +101,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
 | **Reliability** | Error boundary per page; outbox retries with poison-item protection; idempotent upserts with device-generated IDs. |
 | **Performance** | Code-split pages; heavy libraries (charts, PDF) lazy-loaded; charts mount on scroll. |
-| **Quality** | TypeScript strict, no `any`; ESLint clean; 84 unit tests; RLS SQL tests. |
+| **Quality** | TypeScript strict, no `any`; ESLint clean; 87 unit tests; RLS SQL tests. |
 | **Safety** | Every screen states decision support, not diagnosis; thresholds carry sources; LLM output always followed by rule-engine triage. |
 
 ## 8. Success metrics

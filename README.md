@@ -68,7 +68,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 16 indicators plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map** | Hand-built SVG figure, front and back. 8 clickable, keyboard-focusable systems coloured by status. The **heart pulses at your latest HR**, and flagged regions glow. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
-| 4 | **Risk & triage engine** | Transparent and rule-based, with **84 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
+| 4 | **Risk & triage engine** | Transparent and rule-based, with **87 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
 | 5 | **Trends & analytics** | Recharts for all 19 indicators: shaded **normal band**, shaded **personal baseline band**, status-coloured points, **event markers** (EVA, solar event, illness, intervention), a 7/30/90-day toggle, and **correlation insights** (*"On days with <6 h sleep, your reaction time was 25% slower"*). |
 | 6 | **Cognitive & behavioral health** | 2-minute **PVT** reaction-time test (mean/median RT, lapses ≥500 ms, false starts, compared to baseline). **Mood journal** with private notes, a 5-item **isolation & confinement wellbeing score**, a *connect-with-home* reminder, and an animated **4-7-8 breathing** guide. |
 | 7 | **Countermeasures library** | 19 sourced protocol cards: resistive and aerobic exercise, nutrition, hydration, sleep under spacecraft lighting, **SPE storm-shelter protocol**, SANS self-check, motion sickness, infection control, medication safety, and more. Every flagged indicator links straight to its card. |
@@ -81,6 +81,8 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 14 | **Live Monitor (sensors)** | Web Bluetooth GATT health profiles (HR + RR→HRV, SpO₂, BP, temperature, mass), Web Serial and WebSocket suit/wearable telemetry, EVA simulator with 6 injectable faults. Debounced live alarms (sound + checklist), 1-minute aggregates stored and synced, check-in auto-fill from devices. |
 | 15 | **Accounts & sync** | Supabase Auth (email + password, hashed by Supabase). Missions with separate **crew** and **ground** invite codes (role comes from the code). Row Level Security: astronauts see only their own health data; CMO and ground see the crew; journals are owner-only. Offline outbox in IndexedDB, Realtime for alerts, messages, packets and vitals. |
 | 16 | **Ground Console** | For Mission Control and the CMO: crew cards with readiness, triage status and **live sensor strips**; a realtime act/critical **alert feed with acknowledge**; per-crew **messages** (delivered to the astronaut's Ground Link inbox); health packets with one-click PDF. |
+| 17 | **Radiation exposure panel** | Today's dose vs the environment's typical level, mission total vs the NASA 600 mSv career limit, peak day (e.g. solar particle event), days left at the current rate. Built around the CSA radiation-monitoring resource. |
+| 18 | **About & Sources** | All five official Space Apps resources with links, how each shaped the app, "Benefits on Earth", and the non-endorsement statement. |
 | – | **Calm mode** | For emergencies: strips the UI to one huge, high-contrast instruction checklist with *Alert CMO* and *Send packet* buttons. |
 
 ### The demo mission story (ARES-1, Mars Transit, SOL 90)
@@ -97,7 +99,29 @@ Every story beat is asserted in `src/engine/triage.test.ts`.
 
 ---
 
-## NASA resources used
+## Space Apps resources used
+
+These are the official resources for this challenge. All five are linked inside the app on the **About & Sources** page (and from the relevant screens).
+
+| Resource | What it shaped in VITALIS | Where to see it |
+|---|---|---|
+| **NASA — [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/)** | Every measurement, alert, guidance card and body system is tagged with its hazard and icon. "Distance from Earth" is the core idea: escalation advice is timed to the comm delay ("ground response in ~24 min, start these steps now"). | Start page, dashboard hazard strip, every alert |
+| **NASA — [Risks of Human Spaceflight](https://www.nasa.gov/hrp/risks/)** | Each body system maps to its HRP risk (SANS, cardiovascular, osteoporosis, muscle loss, behavioral health, immune, nutrition, renal stones, dust). Combination rules target these risks. Each body-system panel links to the risk page. | Body map → any system |
+| **NASA — [Ongoing HRP Research in Space](https://www.nasa.gov/hrp/ongoing-hrp-research/)** | Countermeasure guides follow this research: resistive + aerobic exercise, sleep lighting, CO₂ and headaches, SANS eye checks, workload. PVT reaction testing and personal baselines mirror how in-flight studies track crew over time. Linked as "Further reading" on 10 guides. | Guidance library |
+| **CSA — [Monitoring Radiation for Astronaut Health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp)** | Daily personal-dosimeter reading in every check-in with limits scaled to the mission location; live dose-rate sensor channel with alarms; solar-particle-event detection → storm-shelter checklist; **Radiation exposure panel** (today, mission total vs the NASA 600 mSv career limit, peak day, days left at the current rate). Cited in the radiation thresholds. | Dashboard → Radiation exposure; Guidance → storm shelter |
+| **CSA — [Why Do We Conduct Science Experiments in Space?](https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp)** | The "Benefits on Earth" case below. | About & Sources page |
+
+### Benefits on Earth
+
+As the CSA notes, research done for space also improves life on Earth. The problem VITALIS solves (no doctor nearby, a slow or missing connection, a person who needs to know what to do *now*) exists on Earth too:
+
+- **Remote & rural healthcare:** clear status, a plain-language "why" and next steps, even offline.
+- **Polar & research stations:** Antarctic winter-over crews face isolation and delayed evacuation, just like a Mars crew.
+- **Ships, submarines & offshore platforms:** small crews, no doctor aboard, intermittent satellite links.
+- **Disaster response:** works when networks are down; syncs to coordinators when a link returns.
+- **Home monitoring:** personal baselines catch "normal on paper, abnormal for you" changes in chronic conditions.
+
+### Additional scientific sources
 
 - **NASA Human Research Program: the five hazards of human spaceflight** (Radiation, Isolation & Confinement, Distance from Earth, Gravity Fields, Hostile/Closed Environments). Every indicator, alert, guidance card and body system is tagged with its hazard(s) and icon.
 - **HRP risk descriptions / Human Research Roadmap.** Each body system maps to its HRP risk: SANS; cardiovascular adaptations; early-onset osteoporosis; reduced muscle mass; adverse cognitive/behavioral conditions; altered immune response; inadequate food & nutrition; renal stone formation; celestial dust exposure.
@@ -228,7 +252,7 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ## Quality
 
 - **TypeScript strict**, no `any` (enforced by ESLint `no-explicit-any`). `npm run lint` is clean.
-- **84 Vitest tests** cover thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
+- **87 Vitest tests** cover thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
 - **Lighthouse** (production build, mobile emulation):
 
   | Page | Accessibility | Best practices | Performance |
@@ -284,3 +308,5 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ---
 
 > ⚠️ **Disclaimer:** VITALIS is decision support, not diagnosis. It never replaces your Crew Medical Officer or flight surgeon. If in doubt, escalate.
+
+> **Non-endorsement:** VITALIS was built for the NASA Space Apps Challenge 2026 using publicly available NASA and CSA resources. It is not endorsed by NASA, the Canadian Space Agency or any space agency, and they are not responsible for its content. Use of each linked website is subject to that website's own terms and data-use parameters.

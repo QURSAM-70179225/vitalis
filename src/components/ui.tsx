@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertOctagon,
+  ExternalLink as ExternalIcon,
   AlertTriangle,
   CheckCircle2,
   Eye,
@@ -249,4 +250,15 @@ export function LazyMount({ children, height }: { children: ReactNode; height: n
     return () => io.disconnect();
   }, [shown]);
   return <div ref={ref} style={shown ? undefined : { minHeight: height }}>{shown ? children : null}</div>;
+}
+
+/** Link to an outside source (opens in a new tab; needs a connection). */
+export function ExternalLink({ href, children, className }: { href: string; children: ReactNode; className?: string }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cn('inline-flex items-center gap-1 text-accent underline-offset-2 hover:underline focus-ring rounded', className)}>
+      {children}
+      <ExternalIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <span className="sr-only">(opens in a new tab)</span>
+    </a>
+  );
 }
