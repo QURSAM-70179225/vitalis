@@ -16,7 +16,11 @@ import type {
   VitalSample,
 } from '@/types';
 
-/** Local-first IndexedDB storage. Nothing leaves the device unless the user taps "Send to Ground". */
+/**
+ * Local-first IndexedDB storage. Every write lands here first. In local/demo mode nothing leaves the
+ * device unless the user sends it; with an account, writes are also queued in `outbox` and uploaded
+ * by src/cloud/sync.ts when a connection exists.
+ */
 export class VitalisDB extends Dexie {
   mission!: EntityTable<Mission, 'id'>;
   settings!: EntityTable<Settings, 'id'>;

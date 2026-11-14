@@ -69,7 +69,11 @@ export default function Settings() {
 
   return (
     <>
-      <PageHeader eyebrow="Configuration" title="Settings" subtitle="All data stays on this device in IndexedDB. Nothing leaves unless you tap Send to Ground or enable the optional AI layer." />
+      <PageHeader eyebrow="Configuration" title="Settings" subtitle={
+          signedIn
+            ? 'Everything is saved on this device first (it works offline), then synced to your mission when a connection is available. Your journal is visible only to you.'
+            : 'All data stays on this device in IndexedDB. Nothing leaves unless you tap Send to Ground, send a hand-off file, or turn on the optional AI layer.'
+        } />
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="lg:col-span-2">
           <AccountPanel />
@@ -197,7 +201,7 @@ export default function Settings() {
               <button className="btn-primary shrink-0">Set</button>
             </form>
           )}
-          <p className="muted mt-3 text-xs">Hashed with PBKDF2-SHA-256 (120k iterations) via WebCrypto. Journal notes never leave the device and are hidden from the CMO view.</p>
+          <p className="muted mt-3 text-xs">Hashed with PBKDF2-SHA-256 (120k iterations) via WebCrypto. {signedIn ? 'Journal notes are synced to your account only: the crew medical officer and the ground team cannot see them.' : 'Journal notes stay on this device and are hidden from the CMO view.'}</p>
         </Section>
 
         <Section icon={Database} title="Your data">

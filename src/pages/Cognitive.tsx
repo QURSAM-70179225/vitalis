@@ -306,6 +306,7 @@ function Journal() {
   const triage = useTriage();
   const addJournal = useApp((s) => s.addJournal);
   const toast = useApp((s) => s.toast);
+  const signedIn = useApp((s) => !!s.cloud.userId && !s.mission?.demo);
   const [mood, setMood] = useState(4);
   const [note, setNote] = useState('');
   const [answers, setAnswers] = useState<number[]>(WB_QUESTIONS.map(() => 3));
@@ -363,7 +364,7 @@ function Journal() {
           </p>
         </fieldset>
         <label htmlFor="jnote" className="label">
-          Private note (stays on this device; never sent to ground)
+          {signedIn ? 'Private note (only you can read it; never shown to the medical officer or ground team)' : 'Private note (stays on this device; never sent to ground)'}
         </label>
         <textarea id="jnote" className="field mb-3 min-h-[110px]" value={note} onChange={(e) => setNote(e.target.value)} placeholder="What went well today? What's on your mind?" />
         <label className="mb-4 flex min-h-[44px] items-center gap-3 text-sm">

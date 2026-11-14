@@ -2,6 +2,15 @@
 
 All notable changes to VITALIS. Newest first.
 
+## 1.4.1 — Accurate privacy wording (November 2026)
+
+### Added
+- README: "How data reaches Earth (and what 'works offline' means)".
+
+### Fixed
+- With an account, some screens said journal notes "stay on this device"/"never leave the device" and that "nothing leaves until you tap Send to Ground". Journal entries do sync to the owner's account (never visible to the medical officer or ground team) and check-ins sync automatically. Settings, Mind, Ground Link and the assistant now show the correct text for each mode.
+- Docs: 17 check-in measurements, 21 database security checks, 17 screens.
+
 ## 1.4.0 — Organ body map & working replay (November 2026)
 
 ### Added

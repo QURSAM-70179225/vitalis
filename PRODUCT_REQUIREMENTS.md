@@ -66,7 +66,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | ID | Requirement | Acceptance criteria | Status |
 |---|---|---|---|
 | **FR-1** | Mission context | Choose environment (ISS, Gateway, Lunar surface, Mars transit, Mars surface, Rover); sets gravity, comm delay, radiation baseline, emphasized risks. Persistent top bar: mission day, environment, delay, last sync, crew member. | ✅ |
-| **FR-2** | Daily check-in | Guided wizard ≤ 3 min; 16 indicators + 12 symptoms; ±/slider/keyboard input; live status chip per value; "How to measure in space" panel per indicator. | ✅ |
+| **FR-2** | Daily check-in | Guided wizard ≤ 3 min; 17 measurements + 12 symptoms; ±/slider/keyboard input; live status chip per value; "How to measure in space" panel per indicator. | ✅ |
 | **FR-3** | Triage engine | Absolute thresholds + personal baseline (14-day mean/SD, \|z\| ≥ 2, 3-day sustained trends) + 11 combination rules; every alert has *why*, actions, escalate-when, hazards, guidance links. Thresholds in one sourced config. | ✅ |
 | **FR-4** | Comm-delay-aware escalation | Act/critical alerts state the earliest ground response (2 × one-way delay) and say to start steps now. | ✅ |
 | **FR-5** | Interactive body map | Front/back SVG, 8 systems coloured by status, keyboard accessible, heart pulses at latest HR, glow on flagged regions, side panel with details. | ✅ |
@@ -104,7 +104,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 
 | Area | Requirement |
 |---|---|
-| **Offline** | Every feature works without a network after first load (service worker precache + IndexedDB). Data can move between devices with no network. Verified on the production build: all 20 routes, desktop and phone, network cut. |
+| **Offline** | Every feature works without a network after first load (service worker precache + IndexedDB). Data can move between devices with no network. Verified on the production build: all 17 screens (20 addresses), desktop and phone, network cut. |
 | **Accessibility** | WCAG 2.1 AA; colour never the only signal (icon + text); keyboard operable; ≥ 44 px targets (56 px check-in controls); high-contrast and reduced-motion modes. Lighthouse accessibility 96–100. |
 | **Privacy** | Local mode: nothing leaves the device unless *Send to Ground*. Cloud mode: RLS enforced server-side; journals owner-only; no passwords in app tables; only the anon/publishable key in the client. |
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
@@ -139,7 +139,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 |---|---|
 | Misplaced trust in a non-certified tool | Disclaimers everywhere; "escalate when" on every alert; never diagnose |
 | False alarms from noisy sensors | Debounced alarms (3 s critical / 8 s act); physical range validation; personal baselines |
-| Data leakage between users | RLS tested with 17 SQL checks; column privileges; roles from invite codes |
+| Data leakage between users | RLS tested with 21 SQL checks; column privileges; roles from invite codes |
 | Device battery dies mid-mission | Low-battery warnings; offline hand-off file to another device; persistent storage |
 | Hand-off file shared with the wrong person | Clear warning that it contains the private journal; own devices only; encryption planned |
 | Data loss offline | IndexedDB outbox with retries; sign-out warns if uploads are pending |

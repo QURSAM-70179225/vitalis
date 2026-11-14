@@ -88,7 +88,7 @@ export default function Assistant() {
           {useLlm ? <Cpu className="h-4 w-4" aria-hidden /> : <WifiOff className="h-4 w-4" aria-hidden />}
           {useLlm
             ? 'AI explanation layer ON: your triage summary is sent to the language model. Answers are checked against the rule engine.'
-            : 'Offline mode: answers come from the on-device rule engine. Nothing leaves this device.'}
+            : 'Offline mode: answers come from the on-device rule engine. Your questions are not sent anywhere.'}
         </p>
         <div className="flex-1 space-y-3 overflow-y-auto pb-3" aria-live="polite">
           {!msgs.length && (

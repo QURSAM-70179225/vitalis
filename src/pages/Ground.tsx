@@ -180,7 +180,11 @@ export default function Ground() {
       <PageHeader
         eyebrow={`Comm delay ${formatDelay(delaySec)} one-way · round-trip ≥ ${roughDuration(delaySec * 2)}`}
         title="Ground Link"
-        subtitle="Nothing leaves this device until you tap Send to Ground. Packets are compressed and transmitted with your mission's light-time delay."
+        subtitle={
+          signedIn
+            ? 'Your check-ins and alerts reach the ground team automatically whenever there is a connection. Send to Ground adds a compressed health report; if you are offline it waits and is sent as soon as a link is back.'
+            : "Nothing leaves this device until you tap Send to Ground. In this local mode the transmission is simulated with your mission's light-time delay, and the flight-surgeon reply is simulated too."
+        }
       />
       <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
         <Panel aria-labelledby="pk-h" data-tour="ground">

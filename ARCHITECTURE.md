@@ -145,12 +145,13 @@ sequenceDiagram
   SB-->>S: postgres_changes → mergeRemote (no re-upload)
 ```
 
-- **Triggers to flush:** each write (debounced 0.8 s), `online` event, every 30 s.
-- **Pull:** on sign-in (`bootstrap`) — profile, mission, crew, data tables (paged 1,000), vitals for 48 h, own journal.
+- **Triggers to flush:** each write (debounced 0.8 s), every 30 s while online, and on reconnect (`online` event → `bootstrap` → pull, then flush). Uploads go oldest first (`seq` order).
+- **Pull:** on sign-in and on every reconnect (`bootstrap`) — profile, mission, crew, data tables (paged 1,000), vitals for 48 h, own journal.
 - **Idempotency:** IDs are generated on the device; upserts are safe to repeat.
 - **Poison protection:** rows rejected by the server are retried 5 times then dropped; network errors keep the queue.
 - **Account scoping:** switching account or leaving demo wipes local data before pulling.
-- **Offline start:** session (supabase-js persisted) + cached profile → app opens with local data.
+- **Offline start:** session (supabase-js persisted) + cached profile → app opens with local data. The very first sign-in on a device needs a connection.
+- **Live sensor frames** (Realtime Broadcast, every ~2 s) are sent only while connected and are not queued; one-minute averages go through the outbox like everything else.
 
 ### 5.5 Gating (App shell)
 
@@ -234,7 +235,7 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 - Client uses only the **anon/publishable key**; secret/service_role keys are refused by Supabase in browsers.
 - Passwords: Supabase Auth (hashed); optional local passcode lock (PBKDF2-SHA-256, 120k iterations).
 - Live sensor broadcast is not persisted and uses the mission's private UUID as channel name (move to private channels for production — see §10).
-- Verified by `supabase/tests/rls_test.sql` (17 checks, including invite-code format).
+- Verified by `supabase/tests/rls_test.sql` (21 checks, including invite-code format).
 - Invite codes are generated with built-in `gen_random_uuid()` only (no `pgcrypto`, which Supabase installs in the `extensions` schema).
 
 ---
@@ -245,7 +246,7 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 - Manifest with 192/512/maskable icons, `id`, and app-icon shortcuts (Check-in, Live, Hand-off); installable. An **Install** button uses the captured `beforeinstallprompt` (`src/utils/install.ts`).
 - `ErrorBoundary` detects chunk-load failures after a redeploy and reloads once with a fresh cache; a *Repair app* button clears the app cache and service worker (never IndexedDB).
 - Host config: `/sw.js` and `index.html` must be served with `Cache-Control: no-cache` (set in `render.yaml`; Vercel revalidates by default).
-- Offline verified on the production build: all 20 routes on desktop and phone sizes with the network cut, plus a new device starting offline from a hand-off file.
+- Offline verified on the production build: all 17 screens (20 addresses, including body-area and guide pages) on desktop and phone sizes with the network cut, plus a new device starting offline from a hand-off file.
 
 ---
 

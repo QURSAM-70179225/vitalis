@@ -54,6 +54,47 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 
 **Automatic measurement:** the **Live Monitor** connects standard **Bluetooth medical devices** (heart-rate straps, pulse oximeters, BP cuffs, thermometers, scales) and **suits/wearables over USB or Wi-Fi** using an open JSON-lines protocol. An ESP32 reference sketch and an EVA simulator with fault injection are included. See **[docs/SENSORS.md](docs/SENSORS.md)**.
 
+## How data reaches Earth (and what "works offline" means)
+
+**Short answer:** nothing reaches Earth while the device is offline. "Works offline" means the app keeps working and saves everything safely on the device. The data waits there and is sent **automatically** as soon as a connection comes back.
+
+```mermaid
+flowchart LR
+  A["Astronaut device<br/>(check-ins, sensors, alerts, reports)"] -->|"1. saved instantly"| L[("On-device storage<br/>IndexedDB")]
+  L -->|"2. added to the waiting list"| O["Outbox<br/>(top bar: 'N waiting')"]
+  O -->|"3. when a connection exists<br/>oldest first, retried until delivered"| S[("Supabase database<br/>protected by Row Level Security")]
+  S -->|"4. real time"| G["Ground Console<br/>Mission Control on Earth"]
+  G -->|"messages, alert acknowledgements"| S
+  S -->|"downloaded when the device reconnects"| A
+```
+
+**1. While offline (no link to Earth)**
+- Every check-in, sensor reading (one-minute averages), alert and *Send to Ground* report is saved straight away on the device.
+- It is also put in a waiting list, the **outbox**. The top bar shows how many items are waiting.
+- Warnings, advice, alarms and charts are all worked out **on the device**, so the astronaut never waits for Earth.
+
+**2. When a connection comes back**
+- The app notices the connection, downloads what changed on the server (for example new messages from the ground) and uploads the outbox, **oldest item first**.
+- It also tries again **every 30 seconds** while online, and right after each new entry.
+- Nothing is lost if the app is closed or the device restarts: the outbox is stored on the device.
+- If the network fails mid-upload, the items stay in the outbox and are retried. If the **server refuses** an item (for example a permission problem), it is retried 5 times and then removed so it cannot block everything behind it; the top bar then shows **"Sync issue"** with the reason.
+- Every record has an ID made on the device, so sending something twice never creates a duplicate.
+
+**3. On Earth**
+- Mission Control and the crew medical officer use the **Ground Console**. New check-ins, alerts, reports and readings appear in real time as soon as they reach the database.
+- They can acknowledge alerts and send messages back. Replies travel the same way in reverse and are downloaded when the astronaut's device next connects.
+
+**Who can see what:** the database enforces it (Row Level Security). Astronauts see only their own health data. The medical officer and ground team see the crew's health data but **never the private journal**: journal entries sync only to the owner's account, so they are available on the owner's other devices.
+
+**Good to know**
+- **Demo / local mode** (`?demo=1`, or no Supabase settings) has no real Earth team: *Send to Ground* is **simulated** using the mission's light-time delay (for example about 12 minutes each way to Mars), sped up by the demo time-warp in Settings so you don't have to wait, followed by a simulated flight-surgeon reply.
+- **The link is the internet.** A real Mars mission would carry this over NASA's Deep Space Network with *Delay-Tolerant Networking* (store-and-forward: hold data until the next contact window). VITALIS follows the same idea: keep everything locally, send when a link exists, retry until delivered.
+- **Live sensor streams** (the second-by-second Live Monitor view on the Ground Console) are sent only while connected and are not queued; the one-minute averages are.
+- **The first sign-in on a new device needs internet.** After that the app opens and works offline.
+- **Hand-off files** (Devices & Sync) move data between *your own* devices without any network; they never go to Earth.
+
+Code: `src/cloud/sync.ts` (outbox, upload, download, real-time), `src/store/db.ts` (on-device storage), `src/features/ground/` (demo transmission simulator).
+
 ### Project documents
 
 | Document | What's in it |
@@ -78,7 +119,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 
 | # | Feature | Highlights |
 |---|---|---|
-| 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 16 indicators plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
+| 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 17 measurements (blood pressure counts as two) plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map with organs** | Hand-built SVG human body, front and back, with shaded 3D-look organs (brain, eyes, lungs, heart, liver, stomach, intestines, kidneys, bladder, spleen, lymph nodes, skeleton) and a gentle tilt that follows the pointer. 8 clickable, keyboard-focusable body areas; status shows as a glowing outline plus a "!" marker. The **heart beats at your latest HR**. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
 | 4 | **Risk & triage engine** | Transparent and rule-based, with **112 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
@@ -314,10 +355,10 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
   | Ground link | 100 | 100 | 77 |
   | Mind | 100 | 100 | 86 |
 
-  Lighthouse 12 no longer has a PWA category. Installability and offline were verified directly: the web manifest has 192/512/maskable icons and shortcuts, the service worker precaches every built asset, and with the network cut the production build reloads and **all 20 pages work on desktop and phone sizes**. A two-device test confirms a brand-new device can start offline from a hand-off file.
-- **17 database security checks** (`supabase/tests/rls_test.sql`) run on plain PostgreSQL.
+  Lighthouse 12 no longer has a PWA category. Installability and offline were verified directly: the web manifest has 192/512/maskable icons and shortcuts, the service worker precaches every built asset, and with the network cut the production build reloads and **all 17 screens work on desktop and phone sizes** (20 addresses tested, including body-area and guide pages). A two-device test confirms a brand-new device can start offline from a hand-off file.
+- **21 database security checks** (`supabase/tests/rls_test.sql`) run on plain PostgreSQL.
 - **Accessibility:** WCAG AA colours; status is never conveyed by colour alone (icon + text + colour); full keyboard support (body-map regions are focusable buttons); ARIA labels; skip link; focus management on navigation; reduced-motion and **high-contrast** modes; ≥ 44 px touch targets (56 px on check-in controls).
-- **Privacy:** all data stays in IndexedDB. Optional PBKDF2 passcode lock; JSON export/import; wipe all. Nothing leaves the device unless you tap *Send to Ground*, send a hand-off file, or enable the AI layer. See [SECURITY.md](SECURITY.md).
+- **Privacy:** data is stored on the device in IndexedDB. In local/demo mode nothing leaves the device unless you tap *Send to Ground*, send a hand-off file, or enable the AI layer; with an account, data syncs to your mission as described in [How data reaches Earth](#how-data-reaches-earth-and-what-works-offline-means). Optional PBKDF2 passcode lock; JSON export/import; wipe all. See [SECURITY.md](SECURITY.md).
 - An **error boundary** around each page means one failing view can't take down the app.
 
 ## Screenshots
