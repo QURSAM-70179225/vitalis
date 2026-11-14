@@ -1,0 +1,34 @@
+# Render Blueprint for VITALIS (https://render.com/docs/blueprint-spec)
+# In Render: New + -> Blueprint -> pick this repo. Render reads this file.
+# VITALIS is plain files after the build, so it runs as a free Static Site
+# (no server, never goes to sleep).
+services:
+  - type: web
+    name: vitalis
+    runtime: static
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Optional: leave both empty to run in local/demo mode.
+      # Render asks for these values when you create the Blueprint.
+      - key: VITE_SUPABASE_URL
+        sync: false
+      # The anon/publishable key ONLY (sb_publishable_...). Never the secret key.
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+    headers:
+      # Browsers must always check for a new service worker after a deploy.
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+      # Built page files have a unique name per build, so they can be cached forever.
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

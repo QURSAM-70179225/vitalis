@@ -33,6 +33,13 @@ Recommended: **Vercel** (free, builds straight from GitHub, HTTPS automatically)
 2. Framework preset **Vite** (build `npm run build`, output `dist`).
 3. Add the two environment variables → **Save and Deploy**.
 
+## Option D — Render
+**Blueprint (easiest):** the repo has a `render.yaml`. In Render choose **New + → Blueprint**, pick the repo, enter `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (publishable key only) or leave them empty for demo mode, then **Apply**. It creates a free Static Site with the right cache headers.
+
+**Manual Static Site:** Build `npm ci && npm run build`, Publish directory `dist`, env `NODE_VERSION=22`, header `/sw.js` → `Cache-Control: no-cache`.
+
+**Web Service (sleeps when idle on the free plan):** Build `npm ci && npm run build`, Start `npm start`, no health check path.
+
 ## After deploying (real-accounts mode)
 
 1. In Supabase → **Authentication → URL Configuration**:
