@@ -195,6 +195,25 @@ export async function flushOutbox(): Promise<void> {
   }
 }
 
+/** Waiting uploads, oldest first (for the Account & sync panel). */
+export async function listOutbox(): Promise<{ seq: number; table: string; createdAt: string; tries: number }[]> {
+  const items = await db.outbox.orderBy('seq').limit(50).toArray();
+  return items.map((o) => ({ seq: o.seq!, table: o.table, createdAt: o.createdAt, tries: o.tries }));
+}
+
+/** Try uploading now (e.g. after fixing the database). */
+export async function retrySync(): Promise<void> {
+  useApp.getState().setCloud({ error: null });
+  await flushOutbox();
+}
+
+/** Drop one stuck upload. The record itself stays on this device. */
+export async function discardOutboxItem(seq: number): Promise<void> {
+  await db.outbox.delete(seq);
+  await updatePending();
+  if ((await db.outbox.count()) === 0) useApp.getState().setCloud({ state: navigator.onLine ? 'synced' : 'offline', error: null });
+}
+
 // ---------------------------------------------------------------------------
 // Pull
 // ---------------------------------------------------------------------------

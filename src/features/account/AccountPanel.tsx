@@ -3,6 +3,7 @@ import { Cloud, Copy, LogOut, RefreshCw, UserCog } from 'lucide-react';
 import { useApp } from '@/store/useApp';
 import { cloudConfigured } from '@/cloud/client';
 import { flushOutbox, bootstrap, missionCodes, signOut, updateProfile } from '@/cloud/sync';
+import { WaitingUploads } from './WaitingUploads';
 import { timeAgo } from '@/utils';
 import { Panel } from '@/components/ui';
 
@@ -61,13 +62,8 @@ export function AccountPanel() {
             {cloud.lastSync ? ` · ${timeAgo(cloud.lastSync)}` : ''}
           </dd>
         </div>
-        {cloud.error && (
-          <div className="sm:col-span-2">
-            <dt className="muted text-xs">Last error</dt>
-            <dd className="text-act">{cloud.error}</dd>
-          </div>
-        )}
       </dl>
+      {(cloud.pending > 0 || cloud.error) && <WaitingUploads />}
 
       <form
         className="mb-4 grid gap-2 sm:grid-cols-[1fr_140px_auto]"

@@ -89,9 +89,10 @@ function SyncBadge() {
   return (
     <a
       href="#/settings"
+      onClick={() => setTimeout(() => document.getElementById('waiting-uploads')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 400)}
       className={cn('chip focus-ring hidden h-9 whitespace-nowrap md:inline-flex', m.cls)}
       title={cloud.error ?? (cloud.lastSync ? `Last sync ${timeAgo(cloud.lastSync)}` : 'Cloud sync')}
-      aria-label={`Cloud sync: ${label}`}
+      aria-label={`Cloud sync: ${label}. Open details`}
     >
       <m.icon className={cn('h-3.5 w-3.5', cloud.state === 'syncing' && 'animate-spin')} aria-hidden /> {label}
     </a>
