@@ -65,6 +65,9 @@ const rrBuffer: number[] = [];
 let minuteFrames: { t: number; v: ChannelValues }[] = [];
 let minuteTimer: ReturnType<typeof setInterval> | null = null;
 let lastBroadcast = 0;
+/** Danger alarms that stay active beep again every 20 s until fixed or muted. */
+const REPEAT_MS = 20_000;
+let lastRepeat = 0;
 let sim: SuitSimulator | null = null;
 
 export const bluetoothSupported = () => typeof navigator !== 'undefined' && !!navigator.bluetooth;
@@ -130,6 +133,13 @@ export const useDevices = create<DeviceState>((set, get) => {
           emit('liveAlarm', { channel: id, level: next.level, value: v, at: now });
           beep(next.level);
         }
+      }
+      if (now - lastRepeat >= REPEAT_MS) {
+        const urgent = Object.values(alarms).some((a) => a?.alarm && a.level === 'critical');
+        if (urgent) {
+          if (lastRepeat) beep('critical');
+          lastRepeat = now;
+        } else lastRepeat = 0;
       }
       const channels = [...new Set([...src.channels, ...(Object.keys(values) as ChannelId[])])];
       set({ latest, history, alarms, sources: get().sources.map((s) => (s.id === sourceId ? { ...s, status: 'live', lastFrameAt: now, channels } : s)) });

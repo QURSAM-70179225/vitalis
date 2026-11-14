@@ -56,7 +56,7 @@ function play(tone: AlertTone): boolean {
     o.type = tone === 'good' ? 'sine' : 'square';
     o.frequency.value = f;
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(tone === 'good' ? 0.05 : 0.08, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(tone === 'good' ? 0.06 : 0.16, t + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, t + p.dur);
     o.connect(g).connect(ac.destination);
     active.add(o);
@@ -93,19 +93,45 @@ function hookUnlock() {
   window.addEventListener('keydown', unlock);
 }
 
+function queue(tone: AlertTone) {
+  pending = tone;
+  pendingAt = Date.now();
+  hookUnlock();
+}
+
 /** Play an alert tone (and vibrate on phones) unless alert sounds are turned off. */
 export function alertSound(tone: AlertTone): void {
   if (!useApp.getState().settings.alertSound) return;
   // Browsers allow vibration only after the user has tapped the page; otherwise do it on the first tap.
   if (hasInteracted()) vibrate(tone);
-  else pendingVibrate = tone;
-  const ac = audio();
-  if (ac && ac.state === 'suspended') void ac.resume().catch(() => undefined);
-  if (!play(tone)) pending = tone;
-  if (pending || pendingVibrate) {
+  else {
+    pendingVibrate = tone;
     pendingAt = Date.now();
     hookUnlock();
   }
+  const ac = audio();
+  if (!ac) return;
+  if (ac.state === 'running') {
+    play(tone);
+    return;
+  }
+  // The audio engine starts "suspended": wait for resume() to finish, THEN play.
+  // (Playing straight away silently failed, which is why alarms made no sound.)
+  ac.resume()
+    .then(() => {
+      if (!play(tone)) queue(tone);
+    })
+    .catch(() => queue(tone));
+}
+
+/**
+ * Short test beep, called from a button tap ("Alarm sound on"), so the browser
+ * always allows it. Returns false when sounds are turned off in Settings.
+ */
+export function testAlertSound(): boolean {
+  if (!useApp.getState().settings.alertSound) return false;
+  alertSound('act');
+  return true;
 }
 
 /** Silence now: stop tones that are playing, cancel vibration and forget any queued alert. */

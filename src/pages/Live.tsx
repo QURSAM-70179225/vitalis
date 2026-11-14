@@ -1,5 +1,6 @@
+import { testAlertSound } from '@/utils/sound';
 import { useState } from 'react';
-import { Bluetooth, Cable, ClipboardCheck, Cpu, FlaskConical, Info, Radio, ShieldAlert, Unplug, Volume2, VolumeX, Wifi, Zap } from 'lucide-react';
+import { Bell, Bluetooth, Cable, ClipboardCheck, Cpu, FlaskConical, Info, Radio, ShieldAlert, Unplug, Volume2, VolumeX, Wifi, Zap } from 'lucide-react';
 import type { ChannelId } from '@/types';
 import { useApp } from '@/store/useApp';
 import { navigate } from '@/hooks/useRoute';
@@ -78,8 +79,26 @@ export default function Live() {
         subtitle="Readings stream automatically from your suit, wearables and medical devices. Alarms fire within seconds, and one-minute averages are saved and synced to the ground team."
         actions={
           <>
-            <button className="btn-ghost" data-silence-alerts onClick={() => dev.setMuted(!muted)} aria-pressed={muted}>
-              {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />} {muted ? 'Alarm sound off' : 'Alarm sound on'}
+            <button
+              className="btn-ghost"
+              data-silence-alerts
+              aria-pressed={muted}
+              onClick={() => {
+                const turningOn = muted;
+                dev.setMuted(!muted);
+                if (turningOn && !testAlertSound()) toast({ title: 'Alert sounds are off in Settings', body: 'Turn on "Alert sounds & vibration" in Settings to hear alarms.', level: 'monitor' });
+              }}
+            >
+              {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />} {muted ? 'Alarm sound off' : 'Alarm sound on'}<span className="sr-only"> (tap to {muted ? 'turn on' : 'mute'})</span>
+            </button>
+            <button
+              className="btn-ghost"
+              onClick={() => {
+                if (!testAlertSound()) toast({ title: 'Alert sounds are off in Settings', body: 'Turn on "Alert sounds & vibration" in Settings to hear alarms.', level: 'monitor' });
+                else if (muted) toast({ title: 'Test beep played', body: 'Live alarms are muted. Tap "Alarm sound off" to turn them back on.', level: 'monitor' });
+              }}
+            >
+              <Bell className="h-4 w-4" aria-hidden /> Test beep
             </button>
             <button className="btn-primary" onClick={() => navigate('checkin')} disabled={!live}>
               <ClipboardCheck className="h-4 w-4" aria-hidden /> Check-in with these readings
