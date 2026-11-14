@@ -44,7 +44,7 @@ flowchart LR
 | Offline | Hand-written service worker (`public/sw.js`) + Vite plugin injecting the precache list |
 | Backend (optional) | Supabase: Auth, Postgres with RLS, Realtime (postgres_changes + broadcast) |
 | Sensors | Web Bluetooth (GATT), Web Serial, WebSocket |
-| Tests | Vitest (108 tests), SQL RLS tests on plain PostgreSQL |
+| Tests | Vitest (112 tests), SQL RLS tests on plain PostgreSQL |
 | Routing | Minimal hash router (`src/hooks/useRoute.ts`) — works on any static host, no rewrites |
 
 ---
@@ -58,7 +58,8 @@ src/
                journey (health map + body changes), reportParser, wellbeing, radiation,
                merge (offline device hand-off)
   data/        Static domain data: environments, NASA HRP hazards, body systems, indicators,
-               guidance cards, 90-day demo generator (seeded PRNG)
+               guidance cards, 90-day demo generator (seeded PRNG), nasa/ (REAL Curiosity RAD
+               radiation, generated from data/nasa by scripts/nasa-data)
   devices/     Sensor layer: GATT parsers, JSON-lines protocol, channels + alarm limits,
                device hub (zustand), live alarm debounce, EVA simulator, persistence effects
   cloud/       Supabase client, row mappers, sync engine (outbox, pull, realtime), cloud effects
@@ -251,7 +252,7 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 
 | Layer | How |
 |---|---|
-| Engine, devices, cloud mappers | `npm test` (Vitest, 108 tests, 13 files) |
+| Engine, devices, cloud mappers | `npm test` (Vitest, 112 tests, 14 files) |
 | Database security | `supabase/tests` on PostgreSQL 16 with an auth stub |
 | UI flows | Playwright scripts used during development: demo sweep, new-user flow, tour, offline reload of every route (desktop + phone), two-device offline hand-off, live alarms (tones counted), console messaging, and accounts mode against a mocked Supabase API |
 | Quality gates | `npm run typecheck`, `npm run lint`, `npm run build` |

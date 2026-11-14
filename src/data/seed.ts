@@ -8,9 +8,13 @@
  *  - Day 33     Contingency EVA (Lena + Viktor)
  *  - Day 35→90  Viktor: resistive-exercise adherence falls, body mass declines (bone-loss proxy)
  *  - Day 42     Solar particle event: dose spike for the whole crew → shelter protocol
+ *               RADIATION IS REAL NASA DATA: every day's dose comes from Curiosity's RAD instrument
+ *               on its cruise to Mars (day 1 = 27 Jan 2012, day 42 = 8 Mar 2012 solar storm).
+ *               See src/data/nasa/ and data/nasa/README.md.
  *  - Day 45–62  Amara: mood decline (isolation) → intervention day 58 → recovery
  *  - Day 76→90  Lena: rising BP, then headache, then vision change → SANS alert today
  */
+import { realRadiationForDay } from './nasa/radiationTimeline';
 import type {
   CheckIn,
   CognitiveResult,
@@ -143,7 +147,9 @@ export function generateDemoData(now: Date = new Date()): DemoData {
       let aerobic = 36 + n() * 6;
       let rr = 14 + n() * 1.1;
       const spo2 = 98 + n() * 0.6;
-      let dose = 1.84 + n() * 0.12;
+      // Real NASA Curiosity RAD measurement for this mission day; ±4 % per person for where they sit in the ship.
+      const real = realRadiationForDay(day);
+      let dose = (real?.doseMsv ?? 1.84) * (1 + n() * 0.04);
       const symptoms: SymptomId[] = [];
 
       // Weekly rest day for exercise.
@@ -157,9 +163,7 @@ export function generateDemoData(now: Date = new Date()): DemoData {
       if (day <= 8 && rand() < 0.35) symptoms.push('backPain');
       if (day <= 3 && rand() < 0.5) symptoms.push('nausea');
 
-      // Day 42 SPE (all crew); day 43 tail.
-      if (day === 42) dose = 38 + rand() * 9;
-      if (day === 43) dose = 5.2 + rand() * 1.2;
+      // Day 42: the real 8 Mar 2012 solar particle event is in the dose above; the crew's sleep and stress react.
       if (day === 42) {
         stress += 1.4;
         sleep -= 1.2;
@@ -310,7 +314,7 @@ export function generateDemoData(now: Date = new Date()): DemoData {
     { id: 'e-ill', day: 12, type: 'illness', label: 'Upper respiratory infection (Kenji)', crewIds: ['c2'] },
     { id: 'e-sleep', day: 18, type: 'other', label: 'High-workload week: thruster anomaly', crewIds: ['c1'] },
     { id: 'e-eva', day: 33, type: 'eva', label: 'Contingency EVA: antenna repair', crewIds: ['c1', 'c4'] },
-    { id: 'e-spe', day: 42, type: 'spe', label: 'Solar particle event (X-class flare)', crewIds: [] },
+    { id: 'e-spe', day: 42, type: 'spe', label: 'Solar storm (real NASA data: 8 Mar 2012)', crewIds: [] },
     { id: 'e-int', day: 58, type: 'intervention', label: 'Behavioral support: PFC + workload rebalanced (Amara)', crewIds: ['c3'] },
     { id: 'e-sans', day: 88, type: 'illness', label: 'Vision change reported (Lena)', crewIds: ['c1'] },
   ];

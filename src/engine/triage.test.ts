@@ -234,7 +234,8 @@ describe('demo mission story', () => {
   it('day 42: solar particle event for the crew', () => {
     for (const c of demo.crew) {
       const r = run(c.id, 42);
-      expect(r.alerts.some((a) => a.ruleId === 'solar-particle-event' && a.level === 'critical')).toBe(true);
+      // Real NASA RAD data: ~6× the typical Mars-transit dose → shelter alert at "Take action today".
+      expect(r.alerts.some((a) => a.ruleId === 'solar-particle-event' && (a.level === 'act' || a.level === 'critical'))).toBe(true);
     }
   });
 

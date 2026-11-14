@@ -4,6 +4,7 @@ import { HAZARD_LIST } from '@/data/hazards';
 import { DISCLAIMER } from '@/engine/thresholds';
 import { ExternalLink, HazardIcon, PageHeader, Panel } from '@/components/ui';
 import { GlossaryPanel } from '@/features/glossary/GlossaryPanel';
+import { NasaRadChart } from '@/features/radiation/NasaRadChart';
 
 export default function About() {
   return (
@@ -40,6 +41,15 @@ export default function About() {
             </Panel>
           ))}
         </div>
+      </section>
+
+      <section aria-labelledby="data-h" className="mb-8">
+        <h2 id="data-h" className="h2 mb-1">Real NASA data in VITALIS</h2>
+        <p className="muted mb-3 max-w-3xl text-sm">
+          The demo crew&apos;s health readings are made up (real astronaut medical records are private), but their <b>radiation is real</b>: every day comes from NASA&apos;s Curiosity rover, which measured
+          space radiation on its way to Mars. The full list of what VITALIS uses, where it comes from and its license is in DATA_SOURCES.md in the project.
+        </p>
+        <NasaRadChart />
       </section>
 
       <section aria-labelledby="hz-h" className="mb-8">

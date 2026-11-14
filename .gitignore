@@ -4,3 +4,4 @@ dist
 .env.local
 *.tsbuildinfo
 *.zip
+scripts/nasa-data/raw/

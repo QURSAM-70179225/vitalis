@@ -26,7 +26,8 @@ describe('radiation summary', () => {
     const series = buildSeries(demo.checkIns.filter((c) => c.crewId === 'c1')).radiationDose!;
     const s = radiationSummary(series);
     expect(s.peak!.day).toBe(42);
-    expect(s.careerFraction).toBeGreaterThan(0.3);
-    expect(s.careerFraction).toBeLessThan(0.5);
+    // 90 days of real Curiosity cruise radiation ≈ 160–170 mSv ≈ 27–28 % of the 600 mSv career limit.
+    expect(s.careerFraction).toBeGreaterThan(0.24);
+    expect(s.careerFraction).toBeLessThan(0.32);
   });
 });

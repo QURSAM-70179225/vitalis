@@ -97,6 +97,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **FR-31** | Chatbot daily summary | Assistant opens with today's condition, readings and actions; answers progress-over-time questions. | ✅ |
 | **FR-32** | Devices & offline sync | Install as an app; offline readiness, storage protection and battery status; hand-off file between your own devices (share sheet, Bluetooth, USB) that merges without deleting and is safe to repeat; new device can start from a hand-off file offline; low-battery warnings at 20 %/10 %; connect a watch via Bluetooth heart rate. | ✅ (two-device offline test) 🧪 (real watches) |
 | **FR-33** | Reliable alarm sounds | Live alarms always audible after a tap; *Test beep*; beep when sound is turned back on; danger alarms repeat every 20 s; muting stops sound and vibration immediately. | ✅ |
+| **FR-34** | Real NASA data | Demo radiation comes from NASA Curiosity RAD cruise measurements (PDS `MSL-M-RAD-3-RDR-V1.0`), reproducible from scripts; labelled "Real NASA data"; full chart on About; every source and license in DATA_SOURCES.md. | ✅ (dataset tests) |
 | **FR-23** | Settings & data | Units, high contrast, reduced motion, threshold editing, passcode lock, export/import/wipe, invite codes, sign out. | ✅ |
 
 ## 7. Non-functional requirements
@@ -109,7 +110,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
 | **Reliability** | Error boundary per page; outbox retries with poison-item protection; idempotent upserts with device-generated IDs. |
 | **Performance** | Code-split pages; heavy libraries (charts, PDF) lazy-loaded; charts mount on scroll. |
-| **Quality** | TypeScript strict, no `any`; ESLint clean; 108 unit tests; RLS SQL tests. |
+| **Quality** | TypeScript strict, no `any`; ESLint clean; 112 unit tests; RLS SQL tests. |
 | **Safety** | Every screen states decision support, not diagnosis; thresholds carry sources; LLM output always followed by rule-engine triage. |
 
 ## 8. Success metrics

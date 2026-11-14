@@ -80,6 +80,7 @@ A change is done only when **all** of these pass: `npm run typecheck`, `npm run 
 | Alarm / alert sound | `src/utils/sound.ts` (tones, queueing, stop), `src/devices/hub.ts` (live alarms, repeat) |
 | Offline / install / battery | `public/sw.js`, `vite.config.ts`, `src/utils/install.ts`, `src/utils/device.ts`, `src/pages/Devices.tsx` |
 | Hosting config | `render.yaml`, `docs/DEPLOYMENT.md`, `vite.config.ts` (`preview.allowedHosts`) |
+| Real NASA data | `scripts/nasa-data/` (download + build), `data/nasa/` (CSV + method), `src/data/nasa/` (generated module + tests); never hand-edit `mslRadCruise.ts`; list any new source in `DATA_SOURCES.md` |
 | Database function | `supabase/schema.sql` (built-in functions only: Supabase keeps extensions in the `extensions` schema), check in `supabase/tests/rls_test.sql` |
 
 ## Gotchas
@@ -102,5 +103,6 @@ A change is done only when **all** of these pass: `npm run typecheck`, `npm run 
 | [CONTRIBUTING.md](CONTRIBUTING.md) | You open a pull request |
 | [SECURITY.md](SECURITY.md) | You touch keys, RLS, privacy or report a vulnerability |
 | [CHANGELOG.md](CHANGELOG.md) | You finish a user-visible change (add a line) |
+| [DATA_SOURCES.md](DATA_SOURCES.md) · [data/nasa/README.md](data/nasa/README.md) | You add a data source, threshold source or dependency |
 | [docs/OFFLINE_AND_DEVICES.md](docs/OFFLINE_AND_DEVICES.md) | Offline use, install, hand-off, watches, battery |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) · [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Hosting · accounts · sensors |

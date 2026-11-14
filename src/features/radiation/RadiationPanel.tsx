@@ -1,4 +1,5 @@
-import { Radiation } from 'lucide-react';
+import { Database, Radiation } from 'lucide-react';
+import { realRadiationForDay } from '@/data/nasa/radiationTimeline';
 import type { Point } from '@/engine/series';
 import { radiationSummary } from '@/engine/radiation';
 import { RULES } from '@/engine/thresholds';
@@ -8,7 +9,7 @@ import { resourceById } from '@/data/resources';
 import { ExternalLink, Panel } from '@/components/ui';
 
 /** Mission radiation exposure: today, total vs the NASA career limit, peak event. */
-export function RadiationPanel({ series, env }: { series: Point[]; env: MissionEnvironment }) {
+export function RadiationPanel({ series, env, realNasaData = false }: { series: Point[]; env: MissionEnvironment; realNasaData?: boolean }) {
   const s = radiationSummary(series);
   const pct = Math.min(100, s.careerFraction * 100);
   const lvl = s.careerFraction >= 0.9 ? 'act' : s.careerFraction >= RULES.careerMonitorFraction ? 'monitor' : 'nominal';
@@ -57,9 +58,23 @@ export function RadiationPanel({ series, env }: { series: Point[]; env: MissionE
             <p className="muted text-xs">
               SOL {s.peak!.day}
               {s.peak!.value / env.baselineDoseMsvPerDay >= 4 ? ' · probable solar particle event' : ''}
+              {realNasaData && realRadiationForDay(s.peak!.day) ? ` (${realRadiationForDay(s.peak!.day)!.date})` : ''}
             </p>
           </div>
         </div>
+      )}
+      {realNasaData && s.today !== null && (
+        <p className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+          <span className="chip border-pink-400/50 text-pink-300">
+            <Database className="h-3.5 w-3.5" aria-hidden /> Real NASA data
+          </span>
+          <span className="muted">
+            Demo radiation is measured by NASA&apos;s Curiosity rover (RAD) on its cruise to Mars, 27 Jan to 25 Apr 2012. Day 42 is the real solar storm of 8 Mar 2012.{' '}
+            <a href="#/about" className="font-semibold text-accent hover:underline">
+              See the data
+            </a>
+          </span>
+        </p>
       )}
     </Panel>
   );

@@ -65,6 +65,9 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to set up, make a change and open a pull request |
 | [SECURITY.md](SECURITY.md) | Privacy and security model, keys, reporting a vulnerability |
 | [CHANGELOG.md](CHANGELOG.md) | What changed in each version |
+| [DATA_SOURCES.md](DATA_SOURCES.md) | Every resource, dataset, published value and library used: what, from where, where in the code, license |
+| [data/nasa/README.md](data/nasa/README.md) | The real NASA radiation dataset: source, method, citations, how to rebuild |
+| [LICENSE](LICENSE) | MIT license |
 | [docs/OFFLINE_AND_DEVICES.md](docs/OFFLINE_AND_DEVICES.md) | User guide: install, offline use, device hand-off, watches, battery, alarm sounds |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Render, Netlify or Cloudflare Pages |
 | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Accounts setup · sensor integration |
@@ -78,7 +81,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 16 indicators plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map** | Hand-built SVG figure, front and back. 8 clickable, keyboard-focusable systems coloured by status. The **heart pulses at your latest HR**, and flagged regions glow. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
-| 4 | **Risk & triage engine** | Transparent and rule-based, with **108 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
+| 4 | **Risk & triage engine** | Transparent and rule-based, with **112 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
 | 5 | **Trends & analytics** | Recharts for all 19 indicators: shaded **normal band**, shaded **personal baseline band**, status-coloured points, **event markers** (EVA, solar event, illness, intervention), a 7/30/90-day toggle, and **correlation insights** (*"On days with <6 h sleep, your reaction time was 25% slower"*). |
 | 6 | **Cognitive & behavioral health** | 2-minute **PVT** reaction-time test (mean/median RT, lapses ≥500 ms, false starts, compared to baseline). **Mood journal** with private notes, a 5-item **isolation & confinement wellbeing score**, a *connect-with-home* reminder, and an animated **4-7-8 breathing** guide. |
 | 7 | **Countermeasures library** | 19 sourced protocol cards: resistive and aerobic exercise, nutrition, hydration, sleep under spacecraft lighting, **SPE storm-shelter protocol**, SANS self-check, motion sickness, infection control, medication safety, and more. Every flagged indicator links straight to its card. |
@@ -114,11 +117,27 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | **SAGE**, Kenji Mori (CMO) | Upper-respiratory infection on days 12–15 (fever + congestion → 🟠 possible infection). Otherwise healthy |
 | **NOVA**, Amara Diallo (MS) | Mood decline mid-mission (days 45–62) → 🟠 behavioral alert → **intervention on day 58** → recovered |
 | **ATLAS**, Viktor Halvorsen (PLT) | Resistive-exercise adherence falls from day 35 and body mass drops 3.6%, giving 🟠 **bone-loss proxy**. Low fluids in the last days raise kidney-stone risk |
-| Whole crew | **Solar particle event on day 42**: dosimeters jump to ~40 mSv (≈22× background), triggering 🔴 the storm-shelter protocol |
+| Whole crew | **Real solar storm on day 42**: radiation for every day is **real NASA data** from the Curiosity rover's cruise to Mars (day 1 = 27 Jan 2012). Day 42 is the storm of **8 Mar 2012**: 11.5 mSv, about 6× the usual level, triggering 🟠 the storm-shelter alert. A smaller real storm shows on days 1–2 |
 
-Every story beat is asserted in `src/engine/triage.test.ts`.
+Every story beat is asserted in `src/engine/triage.test.ts`. The crew's **health readings are made up** (real astronaut medical records are private); their **radiation is real** NASA data. See [DATA_SOURCES.md](DATA_SOURCES.md).
 
 ---
+
+## Real NASA data
+
+VITALIS uses a **real NASA dataset**: radiation measured by the **Radiation Assessment Detector (RAD) on NASA's Curiosity rover** during its flight to Mars. It comes from data set `MSL-M-RAD-3-RDR-V1.0` in the [NASA Planetary Data System](https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/).
+
+| | |
+|---|---|
+| Readings | **15,358** measurements over **218 days** (6 Dec 2011 – 14 Jul 2012) |
+| Quiet-Sun level | 0.444 mGy/day ≈ 1.70 mSv/day (NASA published 1.84 mSv/day for the whole cruise) |
+| Solar storms found | 27–28 Jan, **7–9 Mar** (strongest: 8 Mar, ~6× normal) and 17 May 2012 |
+| Used in the app | Every radiation value of the demo mission; dashboard badge "Real NASA data"; full chart on **About & Sources** |
+| Files | `data/nasa/` (CSV + method), `src/data/nasa/` (app data + tests), `scripts/nasa-data/` (download and rebuild from NASA) |
+
+![Real NASA radiation chart](docs/screenshots/13-nasa-radiation.png)
+
+**What is real and what is made up:** the radiation is real measured NASA data. The demo crew's other health readings are **made up**, because NASA does not publish individual astronauts' medical records. Every source, value and license is listed in **[DATA_SOURCES.md](DATA_SOURCES.md)**; the radiation method is in **[data/nasa/README.md](data/nasa/README.md)**.
 
 ## Space Apps resources used
 
@@ -129,7 +148,7 @@ These are the official resources for this challenge. All five are linked inside 
 | **NASA — [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/)** | Every measurement, alert, guidance card and body system is tagged with its hazard and icon. "Distance from Earth" is the core idea: escalation advice is timed to the comm delay ("ground response in ~24 min, start these steps now"). | Start page, dashboard hazard strip, every alert |
 | **NASA — [Risks of Human Spaceflight](https://www.nasa.gov/hrp/risks/)** | Each body system maps to its HRP risk (SANS, cardiovascular, osteoporosis, muscle loss, behavioral health, immune, nutrition, renal stones, dust). Combination rules target these risks. Each body-system panel links to the risk page. | Body map → any system |
 | **NASA — [Ongoing HRP Research in Space](https://www.nasa.gov/hrp/ongoing-hrp-research/)** | Countermeasure guides follow this research: resistive + aerobic exercise, sleep lighting, CO₂ and headaches, SANS eye checks, workload. PVT reaction testing and personal baselines mirror how in-flight studies track crew over time. Linked as "Further reading" on 10 guides. | Guidance library |
-| **CSA — [Monitoring Radiation for Astronaut Health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp)** | Daily personal-dosimeter reading in every check-in with limits scaled to the mission location; live dose-rate sensor channel with alarms; solar-particle-event detection → storm-shelter checklist; **Radiation exposure panel** (today, mission total vs the NASA 600 mSv career limit, peak day, days left at the current rate). Cited in the radiation thresholds. | Dashboard → Radiation exposure; Guidance → storm shelter |
+| **CSA — [Monitoring Radiation for Astronaut Health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp)** | **Real NASA radiation data** (Curiosity RAD) drives the demo; daily personal-dosimeter reading in every check-in with limits scaled to the mission location; live dose-rate sensor channel with alarms; solar-particle-event detection → storm-shelter checklist; **Radiation exposure panel** (today, mission total vs the NASA 600 mSv career limit, peak day, days left at the current rate). Cited in the radiation thresholds. | Dashboard → Radiation exposure; Guidance → storm shelter |
 | **CSA — [Why Do We Conduct Science Experiments in Space?](https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp)** | The "Benefits on Earth" case below. | About & Sources page |
 
 ### Benefits on Earth
@@ -223,6 +242,8 @@ src/
   utils/        units, helpers, event bus, alarm sounds, device (battery, storage, share), install, service worker
 public/         manifest, icons, sw.js (hand-written; precache list injected at build)
 supabase/       schema.sql (tables, RLS, invite-code functions) + tests/ (RLS checks on plain Postgres)
+data/nasa/      Real NASA Curiosity RAD radiation data (CSV) + method
+scripts/        nasa-data/ download + rebuild scripts for the NASA dataset
 docs/           OFFLINE_AND_DEVICES, DEPLOYMENT, SUPABASE_SETUP, SENSORS, hardware/ (ESP32 sketch), screenshots/
 render.yaml     Render Blueprint (static site + cache headers)
 ```
@@ -280,7 +301,7 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ## Quality
 
 - **TypeScript strict**, no `any` (enforced by ESLint `no-explicit-any`). `npm run lint` is clean.
-- **108 Vitest tests** cover the device hand-off merge, thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
+- **112 Vitest tests** cover the real NASA radiation dataset, the device hand-off merge, thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
 - **Lighthouse** (production build, mobile emulation):
 
   | Page | Accessibility | Best practices | Performance |
@@ -340,5 +361,9 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ---
 
 > ⚠️ **Disclaimer:** VITALIS is decision support, not diagnosis. It never replaces your Crew Medical Officer or flight surgeon. If in doubt, escalate.
+
+## License
+
+VITALIS is released under the **MIT License**, see [LICENSE](LICENSE). NASA data is not subject to copyright in the United States; third-party libraries, fonts and data keep their own licenses, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
 
 > **Non-endorsement:** VITALIS was built for the NASA Space Apps Challenge 2026 using publicly available NASA and CSA resources. It is not endorsed by NASA, the Canadian Space Agency or any space agency, and they are not responsible for its content. Use of each linked website is subject to that website's own terms and data-use parameters.

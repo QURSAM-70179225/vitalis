@@ -2,6 +2,18 @@
 
 All notable changes to VITALIS. Newest first.
 
+## 1.3.0 — Real NASA data (November 2026)
+
+### Added
+- **Real NASA dataset:** 15,358 radiation readings from NASA's Curiosity rover (RAD) on its cruise to Mars, from the Planetary Data System. The demo mission's radiation now comes from it; day 42 is the real solar storm of 8 Mar 2012.
+- "Real NASA data" badge on the radiation panel and a chart of all 218 days on About & Sources.
+- `data/nasa/` (CSV + method), `scripts/nasa-data/` (download + rebuild), dataset tests.
+- `DATA_SOURCES.md`: every resource, dataset, published value and library, with where it is used and its license.
+- `LICENSE` (MIT).
+
+### Changed
+- Day 42 of the demo is now "Take action today: go to the shelter" (real storm ≈ 6× normal) instead of a made-up 22× spike.
+
 ## 1.2.0 — Everyday use (November 2026)
 
 ### Added

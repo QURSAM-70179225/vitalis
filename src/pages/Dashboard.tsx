@@ -30,6 +30,7 @@ export function Dashboard() {
   const { checkIns, cognitive } = useCrewData();
   const units = useApp((s) => s.settings.units);
   const setCalm = useApp((s) => s.setCalm);
+  const demoMission = useApp((s) => !!s.mission?.demo);
   const { tasks, toggle } = useTodayTasks();
   const [selected, setSelected] = useState<SystemId | null>(null);
 
@@ -155,7 +156,7 @@ export function Dashboard() {
 
         {/* Radiation exposure (CSA radiation monitoring resource) */}
         <div className="lg:col-span-12">
-          <RadiationPanel series={series.radiationDose ?? []} env={env} />
+          <RadiationPanel series={series.radiationDose ?? []} env={env} realNasaData={demoMission} />
         </div>
 
         {/* Hazard exposure strip */}
