@@ -435,6 +435,10 @@ All screenshots are from the current version in demo mode.
 
 > ⚠️ **Disclaimer:** VITALIS is decision support, not diagnosis. It never replaces your Crew Medical Officer or flight surgeon. If in doubt, escalate.
 
+## Use of SI tools
+
+The idea, features, design decisions, testing and bug-finding are our team's work. We used an SI coding assistant to help generate code, documentation and the NASA data-processing scripts, following our instructions. We tested the app repeatedly, reported problems and directed every fix and change. Screenshots are real captures of the app (not SI-generated).
+
 ## License
 
 VITALIS is released under the **MIT License**, see [LICENSE](LICENSE). NASA data is not subject to copyright in the United States; third-party libraries, fonts and data keep their own licenses, listed in [DATA_SOURCES.md](DATA_SOURCES.md).

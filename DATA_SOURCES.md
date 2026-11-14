@@ -85,7 +85,11 @@ Every threshold has its source written next to it in `src/engine/thresholds.ts` 
 | Fonts: Inter, Space Grotesk, JetBrains Mono (Google Fonts) | SIL Open Font License 1.1 |
 | VITALIS code | MIT, see [LICENSE](LICENSE) |
 
-## 7. Not used
+## 7. Use of SI tools
+
+The code, documentation and NASA data-processing scripts (`scripts/nasa-data/`) were generated with the help of an SI coding assistant, following the team's instructions; the team designed the features, tested the app and directed every fix. The NASA radiation values themselves are real measurements, only reformatted by these scripts. Screenshots are real captures of the app (not SI-generated).
+
+## 8. Not used
 
 - No real astronaut medical records (none are public).
 - No NASA logos or insignia: VITALIS uses its own logo.
