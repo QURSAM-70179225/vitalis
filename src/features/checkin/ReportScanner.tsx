@@ -71,7 +71,7 @@ export function ReportScanner({ open, onClose, onUse }: { open: boolean; onClose
             <div className={progress.fraction === null ? 'h-full w-1/3 animate-pulse rounded-full bg-accent' : 'h-full rounded-full bg-accent transition-all'} style={progress.fraction === null ? undefined : { width: `${Math.round(progress.fraction * 100)}%` }} />
           </div>
         )}
-        <p className="muted text-xs">The text is read on this device; the photo is never uploaded. The first scan downloads the text reader (about 5 MB) and keeps it for offline use.</p>
+        <p className="muted text-xs">The text is read on this device; the photo is never uploaded. The first scan downloads the text reader (about 7 MB) and keeps it for offline use.</p>
         {preview && <img src={preview} alt="Report photo" className="max-h-56 w-full rounded-xl object-contain" />}
         {note && (
           <p role="status" className="rounded-lg bg-monitor/10 p-3 text-sm text-monitor">

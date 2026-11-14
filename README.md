@@ -8,6 +8,25 @@ Built for the **2026 NASA Space Apps Challenge**: *Create Health Monitoring Soft
 
 **At a glance:** works with no internet · installs as an app on phone, tablet and laptop · moves data between your devices without a network · reads your watch and medical devices over Bluetooth · beeps and vibrates when something is wrong · explains everything in plain words.
 
+> ### 🧑‍⚖️ Judges: start here (5 minutes, no sign-up)
+>
+> 1. **Open the [live demo](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1).** It loads a 90-day Mars-transit mission for a crew of 4 and a 60-second guided tour.
+> 2. **Dashboard:** the red *Get medical help now* banner → tap **Show me what to do** for the emergency checklist, timed to the Earth delay ("the doctors on Earth can answer in ~24 min at the earliest. Start these steps now").
+> 3. **Body map:** tap the **eyes** (glowing with a "!") to see *why* VITALIS flagged them: blood pressure above *your* normal, rising every day, plus headaches and blurry vision.
+> 4. **Health Journey:** press ▶ to replay the last 40 days and watch the body change day by day.
+> 5. **About & Sources:** the **real NASA data** chart. Every radiation value in the demo comes from NASA's Curiosity rover, and day 42 is the real solar storm of 8 March 2012.
+> 6. **Turn off Wi-Fi and reload:** everything still works.
+>
+> *Optional:* **Live Monitor** → *Suit (EVA)* → *Low oxygen saturation* to hear and see a live alarm; **Check-In** → *Scan a report* to read numbers from a photo.
+
+| What makes VITALIS different | |
+|---|---|
+| **Built for the delay** | Advice is timed to the real Earth–Mars delay: act now, don't wait for the ground. |
+| **Explains every warning** | Status → why → what to do → when to get help, in plain words. Never a black box, never a diagnosis. |
+| **Normal *for you*** | Personal 14-day baselines catch "normal on paper, abnormal for you". |
+| **Fully offline** | Installs as an app; all checks run on the device; data syncs to Mission Control when a link exists. |
+| **Real NASA data and resources** | Curiosity RAD radiation data plus all five official NASA/CSA resources, each one listed with where it is used ([DATA_SOURCES.md](DATA_SOURCES.md)). |
+
 ![Dashboard](docs/screenshots/02-dashboard.png)
 
 ---
@@ -122,7 +141,7 @@ Code: `src/cloud/sync.ts` (outbox, upload, download, real-time), `src/store/db.t
 | 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 17 measurements (blood pressure counts as two) plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map with organs** | Hand-built SVG human body, front and back, with shaded 3D-look organs (brain, eyes, lungs, heart, liver, stomach, intestines, kidneys, bladder, spleen, lymph nodes, skeleton) and a gentle tilt that follows the pointer. 8 clickable, keyboard-focusable body areas; status shows as a glowing outline plus a "!" marker. The **heart beats at your latest HR**. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
-| 4 | **Risk & triage engine** | Transparent and rule-based, with **112 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
+| 4 | **Risk & triage engine** | Transparent and rule-based, with **114 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
 | 5 | **Trends & analytics** | Recharts for all 19 indicators: shaded **normal band**, shaded **personal baseline band**, status-coloured points, **event markers** (EVA, solar event, illness, intervention), a 7/30/90-day toggle, and **correlation insights** (*"On days with <6 h sleep, your reaction time was 25% slower"*). |
 | 6 | **Cognitive & behavioral health** | 2-minute **PVT** reaction-time test (mean/median RT, lapses ≥500 ms, false starts, compared to baseline). **Mood journal** with private notes, a 5-item **isolation & confinement wellbeing score**, a *connect-with-home* reminder, and an animated **4-7-8 breathing** guide. |
 | 7 | **Countermeasures library** | 19 sourced protocol cards: resistive and aerobic exercise, nutrition, hydration, sleep under spacecraft lighting, **SPE storm-shelter protocol**, SANS self-check, motion sickness, infection control, medication safety, and more. Every flagged indicator links straight to its card. |
@@ -342,7 +361,7 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ## Quality
 
 - **TypeScript strict**, no `any` (enforced by ESLint `no-explicit-any`). `npm run lint` is clean.
-- **112 Vitest tests** cover the real NASA radiation dataset, the device hand-off merge, thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
+- **114 Vitest tests** cover the real NASA radiation dataset, the device hand-off merge, thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
 - **Lighthouse** (production build, mobile emulation):
 
   | Page | Accessibility | Best practices | Performance |
@@ -363,8 +382,21 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 
 ## Screenshots
 
+All screenshots are from the current version in demo mode.
+
 | | |
 |---|---|
+| ![Onboarding](docs/screenshots/01-onboarding.png) Start screen & NASA hazards | ![Body map panel](docs/screenshots/03-body-map-panel.png) Tap an organ: why it was flagged and what to do |
+| ![Health Journey](docs/screenshots/14-health-journey.png) Health Journey: health map and body replay | ![Live monitor](docs/screenshots/17-live-monitor.png) Live Monitor with a low-oxygen alarm |
+| ![Check-in](docs/screenshots/04-checkin.png) Check-in with "How to measure in space" | ![Report scan](docs/screenshots/16-report-scan.png) Scan a health report from a photo (on-device) |
+| ![Trends](docs/screenshots/05-trends.png) Trends with normal + personal baseline bands | ![CMO](docs/screenshots/06-cmo-crew.png) Crew medical officer view |
+| ![Ground link](docs/screenshots/07-ground-link.png) Ground link with light-time delay | ![Devices](docs/screenshots/15-devices-sync.png) Devices & Sync: install, offline hand-off, watch |
+| ![Mind](docs/screenshots/08-mind.png) Reaction test, mood and feelings & home | ![Achievements](docs/screenshots/09-achievements.png) Crew-positive achievements |
+| ![Camera](docs/screenshots/10-camera.png) Experimental camera heart rate | ![Calm mode](docs/screenshots/11-calm-mode.png) Calm mode emergency checklist |
+
+<p align="center"><img src="docs/screenshots/12-phone.png" width="300" alt="Phone layout"></p>
+
+---|---|
 | ![Onboarding](docs/screenshots/01-onboarding.png) Onboarding & HRP hazards | ![Body map panel](docs/screenshots/03-body-map-panel.png) Body-system side panel |
 | ![Check-in](docs/screenshots/04-checkin.png) Check-in with "How to measure in space" | ![Trends](docs/screenshots/05-trends.png) Trends with normal + personal baseline bands |
 | ![CMO](docs/screenshots/06-cmo-crew.png) Crew Medical Officer view | ![Ground link](docs/screenshots/07-ground-link.png) Ground link with light-time delay |

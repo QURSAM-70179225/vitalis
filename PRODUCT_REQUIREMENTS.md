@@ -110,7 +110,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
 | **Reliability** | Error boundary per page; outbox retries with poison-item protection; idempotent upserts with device-generated IDs. |
 | **Performance** | Code-split pages; heavy libraries (charts, PDF) lazy-loaded; charts mount on scroll. |
-| **Quality** | TypeScript strict, no `any`; ESLint clean; 112 unit tests; RLS SQL tests. |
+| **Quality** | TypeScript strict, no `any`; ESLint clean; 114 unit tests; RLS SQL tests. |
 | **Safety** | Every screen states decision support, not diagnosis; thresholds carry sources; LLM output always followed by rule-engine triage. |
 
 ## 8. Success metrics

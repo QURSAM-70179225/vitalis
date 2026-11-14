@@ -45,7 +45,7 @@ flowchart LR
 | Backend (optional) | Supabase: Auth, Postgres with RLS, Realtime (postgres_changes + broadcast) |
 | Sensors | Web Bluetooth (GATT), Web Serial, WebSocket |
 | Photo OCR | Tesseract.js 5 (lazy-loaded; worker, WebAssembly core and English model served from `/tesseract/` by a Vite plugin, cached by the service worker on first use); browser `TextDetector` first when available |
-| Tests | Vitest (112 tests), SQL RLS tests on plain PostgreSQL |
+| Tests | Vitest (114 tests), SQL RLS tests on plain PostgreSQL |
 | Routing | Minimal hash router (`src/hooks/useRoute.ts`) — works on any static host, no rewrites |
 
 ---
@@ -149,6 +149,7 @@ sequenceDiagram
 - **Pull:** on sign-in and on every reconnect (`bootstrap`) — profile, mission, crew, data tables (paged 1,000), vitals for 48 h, own journal.
 - **Idempotency:** IDs are generated on the device; upserts are safe to repeat.
 - **Poison protection:** rows rejected by the server are retried 5 times then dropped; network errors keep the queue.
+- **Visibility:** the top-bar badge opens *Waiting uploads* (`src/features/account/WaitingUploads.tsx`): each queued item, refusal count, the error in plain words (`src/cloud/syncErrors.ts`, tested) with the fix, and *Try again* / *Remove* (`retrySync`, `discardOutboxItem`).
 - **Account scoping:** switching account or leaving demo wipes local data before pulling.
 - **Offline start:** session (supabase-js persisted) + cached profile → app opens with local data. The very first sign-in on a device needs a connection.
 - **Live sensor frames** (Realtime Broadcast, every ~2 s) are sent only while connected and are not queued; one-minute averages go through the outbox like everything else.
@@ -254,7 +255,7 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 
 | Layer | How |
 |---|---|
-| Engine, devices, cloud mappers | `npm test` (Vitest, 112 tests, 14 files) |
+| Engine, devices, cloud mappers | `npm test` (Vitest, 114 tests, 15 files) |
 | Database security | `supabase/tests` on PostgreSQL 16 with an auth stub |
 | UI flows | Playwright scripts used during development: demo sweep, new-user flow, tour, offline reload of every route (desktop + phone), two-device offline hand-off, live alarms (tones counted), console messaging, and accounts mode against a mocked Supabase API |
 | Quality gates | `npm run typecheck`, `npm run lint`, `npm run build` |

@@ -1,7 +1,7 @@
 {
   "name": "vitalis",
   "private": true,
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "VITALIS — Astronaut Health Command Center (NASA Space Apps 2026)",
   "license": "MIT",
   "type": "module",

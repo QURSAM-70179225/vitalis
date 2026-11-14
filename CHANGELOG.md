@@ -2,6 +2,18 @@
 
 All notable changes to VITALIS. Newest first.
 
+## 1.5.0 — Submission polish (November 2026)
+
+### Added
+- **Waiting uploads panel** (Settings → Account & sync, opened from the top-bar sync badge): each stuck item in plain words, why the server refused it and how to fix it, with *Try again now* and *Remove*.
+- README: "Judges: start here" quick path and "What makes VITALIS different".
+
+### Changed
+- All README screenshots retaken from the current version, plus new ones for Health Journey, Live Monitor, report scan and Devices & Sync.
+
+### Fixed
+- Report scanner said the text reader was about 5 MB; it is about 7 MB.
+
 ## 1.4.1 — Accurate privacy wording (November 2026)
 
 ### Added
