@@ -81,3 +81,6 @@ do $$ begin
   exception when insufficient_privilege then raise notice 'PASS: crew cannot forge acknowledgement'; end;
 end $$;
 select (select title from public.alerts where id='al1')='SANS v2' as "PASS alert upsert works";
+
+-- Invite codes use only built-in functions (no pgcrypto / gen_random_bytes).
+select public.random_code() ~ '^[A-Z2-9]{8}$' as "PASS invite code format";

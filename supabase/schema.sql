@@ -9,7 +9,7 @@
 --   * roles are assigned by the invite code used to join a mission, not self-declared
 -- =============================================================================
 
-create extension if not exists pgcrypto;
+-- No extensions needed: gen_random_uuid() is built into PostgreSQL 13+.
 
 -- ---------------------------------------------------------------------------
 -- Missions & profiles
@@ -77,9 +77,12 @@ language sql stable security definer set search_path = public as $$
       )
 $$;
 
+-- 8-character invite code from the first 6 (fully random) bytes of a v4 UUID.
+-- Uses only built-in functions, so it works on Supabase where pgcrypto lives in
+-- the "extensions" schema (gen_random_bytes is not on the search path there).
 create or replace function public.random_code() returns text
-language sql volatile as $$
-  select upper(substr(translate(encode(gen_random_bytes(9), 'base64'), '+/=0O1Il', 'XYZ23456'), 1, 8))
+language sql volatile set search_path = public, pg_catalog as $$
+  select upper(substr(translate(encode(uuid_send(gen_random_uuid()), 'base64'), '+/=0O1Il', 'XYZ23456'), 1, 8))
 $$;
 
 -- Create a mission. The creator joins it as astronaut, cmo or ground (e.g. a ground admin).
