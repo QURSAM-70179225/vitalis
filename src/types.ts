@@ -198,6 +198,8 @@ export interface Settings {
   timeWarp: number;
   thresholdOverrides: Partial<Record<IndicatorId, Partial<ThresholdBands>>>;
   tourSeen: boolean;
+  /** Beep / chime / vibration for health alerts. */
+  alertSound: boolean;
 }
 
 export interface Mission {

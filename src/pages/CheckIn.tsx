@@ -3,7 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   ArrowRight,
+  Bluetooth,
   Camera,
+  Keyboard,
+  ScanText,
   CheckCircle2,
   Dumbbell,
   HeartPulse,
@@ -31,6 +34,7 @@ import { Disclaimer, PageHeader, StatusBadge } from '@/components/ui';
 import { NumberField, ScaleField, SymptomGrid, liveLevel } from '@/features/checkin/fields';
 import { freshReadings, type Reading } from '@/devices/hub';
 import { CHANNELS } from '@/devices/channels';
+import { ReportScanner } from '@/features/checkin/ReportScanner';
 
 interface Step {
   title: string;
@@ -104,6 +108,8 @@ export default function CheckIn() {
   }, []);
 
   const [values, setValues] = useState<IndicatorValues>(initial.values);
+  const [sources, setSources] = useState<Partial<Record<IndicatorId, string>>>(initial.fromDevice);
+  const [scanOpen, setScanOpen] = useState(false);
   const [skipped, setSkipped] = useState<IndicatorId[]>(initial.skipped);
   const [symptoms, setSymptoms] = useState<SymptomId[]>(initial.symptoms);
   const [notes, setNotes] = useState(initial.notes);
@@ -113,8 +119,8 @@ export default function CheckIn() {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    draft = submitted ? null : { values, skipped, symptoms, notes, step, started: started.current, fromDevice: initial.fromDevice };
-  }, [values, skipped, symptoms, notes, step, submitted, initial.fromDevice]);
+    draft = submitted ? null : { values, skipped, symptoms, notes, step, started: started.current, fromDevice: sources };
+  }, [values, skipped, symptoms, notes, step, submitted, sources]);
 
   useEffect(() => {
     // Read-and-clear atomically so the value is applied exactly once (StrictMode-safe).
@@ -150,7 +156,7 @@ export default function CheckIn() {
       values: final,
       symptoms,
       notes: notes || undefined,
-      source: Object.keys(initial.fromDevice).length >= 2 ? 'device' : 'manual',
+      source: Object.keys(sources).length >= 2 ? 'device' : 'manual',
     };
     await addCheckIn(c);
     draft = null;
@@ -187,6 +193,42 @@ export default function CheckIn() {
         ))}
       </ol>
 
+      {step === 0 && (
+        <section aria-labelledby="how-h" className="panel mb-5 p-4">
+          <h2 id="how-h" className="mb-3 text-sm font-semibold">How do you want to add today's numbers?</h2>
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+            {[
+              { icon: Keyboard, label: 'Type them in', hint: 'Use the boxes below', onClick: () => document.getElementById('main')?.querySelector('input')?.focus() },
+              { icon: ScanText, label: 'Scan a report', hint: 'Photo or text of a report', onClick: () => setScanOpen(true) },
+              { icon: Bluetooth, label: 'Connect a device', hint: 'Bluetooth, suit or wearable', onClick: () => navigate('live') },
+              { icon: Camera, label: 'Use the camera', hint: 'Heart rate from your face', onClick: () => navigate('camera') },
+            ].map((m) => (
+              <button key={m.label} onClick={m.onClick} className="focus-ring flex min-h-[72px] items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:border-accent hover:bg-accent/10">
+                <m.icon className="h-6 w-6 shrink-0 text-accent" aria-hidden />
+                <span>
+                  <span className="block text-sm font-semibold">{m.label}</span>
+                  <span className="muted block text-xs">{m.hint}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+          {Object.keys(sources).length > 0 && (
+            <p className="muted mt-3 text-xs">
+              Already filled in for you: {Object.keys(sources).map((k) => INDICATORS[k as IndicatorId].label.toLowerCase()).join(', ')}. Check them and change anything that looks wrong.
+            </p>
+          )}
+        </section>
+      )}
+      <ReportScanner
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        onUse={(v) => {
+          setValues((x) => ({ ...x, ...v }));
+          setSkipped((x) => x.filter((id) => !(id in v)));
+          setSources((x) => ({ ...x, ...Object.fromEntries(Object.keys(v).map((k) => [k, 'scanned report'])) }));
+          toast({ title: `${Object.keys(v).length} values added from the report`, body: 'Check each step and press Next.', level: 'info' });
+        }}
+      />
       <AnimatePresence mode="wait">
         <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.18 }}>
           {cur.items && (
@@ -205,7 +247,7 @@ export default function CheckIn() {
                         skipped={skipped.includes(id)}
                         onSkip={(s) => toggleSkip(id, s)}
                         optionalLabel={
-                          initial.fromDevice[id] ? `📡 From ${initial.fromDevice[id]}` : id === 'bodyMass' ? (massDue ? 'Weekly measurement due' : 'Weekly; not due today') : undefined
+                          sources[id] ? `${sources[id] === 'scanned report' ? '📄' : '📡'} From ${sources[id]}` : id === 'bodyMass' ? (massDue ? 'Weekly measurement due' : 'Weekly; not due today') : undefined
                         }
                       />
                       {id === 'heartRate' && (

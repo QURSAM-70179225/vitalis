@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bot, Cpu, Send, WifiOff } from 'lucide-react';
 import { useApp } from '@/store/useApp';
 import { useCrewData, useMissionContext, useTriage } from '@/hooks/useMission';
-import { answerOffline, footer, llmSystemPrompt, type AssistantContext } from '@/engine/assistant';
+import { answerOffline, dailySummary, footer, llmSystemPrompt, type AssistantContext } from '@/engine/assistant';
+import { bodyChanges } from '@/engine/journey';
 import { computeInsights } from '@/engine/insights';
 import { cn } from '@/utils';
 import { Drawer } from '@/components/ui';
@@ -13,7 +14,7 @@ interface Msg {
   source?: 'rules' | 'llm';
 }
 
-const SUGGESTIONS = ['How am I doing?', 'Why is my blood pressure flagged?', 'What should I do now?', 'How is my sleep?', 'When should I contact the flight surgeon?'];
+const SUGGESTIONS = ['What should I do now?', 'How is my sleep?', 'How am I changing over time?', 'Why is my blood pressure flagged?', 'I feel lonely', 'When should I call the doctors on Earth?'];
 
 const GROQ_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_MODEL = import.meta.env.VITE_GROQ_MODEL || 'llama-3.1-8b-instant';
@@ -42,10 +43,11 @@ export default function Assistant() {
   const setOpen = useApp((s) => s.setAssistant);
   const aiEnabled = useApp((s) => s.settings.aiEnabled);
   const triage = useTriage();
-  const { delaySec, crewMember } = useMissionContext();
+  const { delaySec, crewMember, day } = useMissionContext();
   const { checkIns, cognitive } = useCrewData();
   const insights = useMemo(() => computeInsights(checkIns, cognitive), [checkIns, cognitive]);
-  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const changes = useMemo(() => (crewMember ? bodyChanges({ crewId: crewMember.id, checkIns, cognitive }, Math.max(1, day - 29), day) : []), [crewMember, checkIns, cognitive, day]);
+  const [msgs, setMsgs] = useState<Msg[]>(() => (triage && crewMember ? [{ role: 'assistant', text: dailySummary({ triage, delaySec, callsign: crewMember.callsign, insights: [], changes: [] }), source: 'rules' }] : []));
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -56,7 +58,7 @@ export default function Assistant() {
   }, [msgs]);
 
   if (!triage || !crewMember) return null;
-  const ctx: AssistantContext = { triage, delaySec, callsign: crewMember.callsign, insights };
+  const ctx: AssistantContext = { triage, delaySec, callsign: crewMember.callsign, insights, changes };
 
   const ask = async (q: string) => {
     if (!q.trim()) return;

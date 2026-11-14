@@ -18,11 +18,11 @@ export interface SystemInfo {
 export const SYSTEMS: Record<SystemId, SystemInfo> = {
   cardio: {
     id: 'cardio',
-    name: 'Cardiovascular',
+    name: 'Heart & blood flow',
     short: 'Heart',
     whatItDoes: 'Your heart and blood vessels move oxygen and nutrients around your body.',
     spaceflightEffects:
-      'In weightlessness, fluid shifts toward your head and the heart works less against gravity. Over time it can shrink slightly, and on landing you may feel dizzy when standing (orthostatic intolerance). Radiation may add long-term heart disease risk.',
+      'In weightlessness, fluid shifts toward your head and the heart works less against gravity. Over time it can shrink slightly, and when you return to gravity you may feel dizzy when you stand up. Radiation may add long-term heart disease risk.',
     hazards: ['gravity', 'radiation'],
     indicators: ['heartRate', 'systolic', 'diastolic'],
     symptoms: ['chestPain', 'dizziness', 'shortnessOfBreath'],
@@ -33,8 +33,8 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   musculoskeletal: {
     id: 'musculoskeletal',
-    name: 'Musculoskeletal & Bone',
-    short: 'Bone/Muscle',
+    name: 'Bones & muscles',
+    short: 'Bones',
     whatItDoes: 'Bones and muscles hold you up, protect your organs and let you move and work.',
     spaceflightEffects:
       'Without loading, weight-bearing bones like your hips and spine can lose about 1–1.5% of their mineral density per month, and leg and back muscles weaken. Back pain is common as the spine lengthens.',
@@ -48,11 +48,11 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   sans: {
     id: 'sans',
-    name: 'Eyes & Brain (SANS)',
-    short: 'Eyes/Brain',
+    name: 'Eyes & head pressure',
+    short: 'Eyes',
     whatItDoes: 'Your eyes and brain take in and process what you see and control your body.',
     spaceflightEffects:
-      'Spaceflight-Associated Neuro-ocular Syndrome (SANS): the headward fluid shift can swell the optic disc and flatten the back of the eye, causing blurry near vision. Headaches and higher CO₂ may be related.',
+      'Without gravity, body fluids move up into your head. Over months this can press on the back of your eyes and make close-up things look blurry. Doctors call it SANS (Spaceflight-Associated Neuro-ocular Syndrome). Headaches and stuffy cabin air may be linked.',
     hazards: ['gravity', 'environment'],
     indicators: ['systolic'],
     symptoms: ['headache', 'visionChange'],
@@ -63,7 +63,7 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   immune: {
     id: 'immune',
-    name: 'Immune System',
+    name: 'Body defenses (immune system)',
     short: 'Immune',
     whatItDoes: 'Your immune system fights infections and repairs damage.',
     spaceflightEffects:
@@ -77,8 +77,8 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   behavioral: {
     id: 'behavioral',
-    name: 'Behavioral Health & Nervous System',
-    short: 'Behavioral',
+    name: 'Mind, mood & sleep',
+    short: 'Mind',
     whatItDoes: 'Mood, sleep, stress and thinking speed decide how safely you can work.',
     spaceflightEffects:
       'Isolation, confinement, distance from family, workload and disrupted light cycles can lower mood, cause sleep loss and slow reaction time.',
@@ -92,8 +92,8 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   gi: {
     id: 'gi',
-    name: 'GI & Nutrition',
-    short: 'GI/Nutrition',
+    name: 'Stomach & food',
+    short: 'Stomach',
     whatItDoes: 'Digestion turns food and water into energy and building blocks for your body.',
     spaceflightEffects:
       'Appetite often drops in space, leading to weight loss. Space motion sickness causes nausea early in a mission or after gravity changes. Low fluid intake raises kidney stone risk.',
@@ -120,7 +120,7 @@ export const SYSTEMS: Record<SystemId, SystemInfo> = {
   },
   lungs: {
     id: 'lungs',
-    name: 'Lungs & Respiratory',
+    name: 'Lungs & breathing',
     short: 'Lungs',
     whatItDoes: 'Your lungs bring in oxygen and remove CO₂.',
     spaceflightEffects:

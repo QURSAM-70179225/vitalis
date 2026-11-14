@@ -109,3 +109,6 @@ html.hc .text-slate-400, html.hc .text-slate-500, html.hc .text-slate-300 { colo
 .glow-pulse { animation: glow-pulse 2.2s ease-in-out infinite; }
 
 .skip-link { @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-space-950; }
+
+/* Animated starfield canvas: hidden in high-contrast mode */
+html.hc .starfield { display: none; }

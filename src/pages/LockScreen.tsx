@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Starfield } from '@/components/Starfield';
 import { Lock } from 'lucide-react';
 import { useApp } from '@/store/useApp';
 import { hashPasscode } from '@/utils';
@@ -23,7 +24,7 @@ export function LockScreen() {
 
   return (
     <div className="relative grid min-h-screen place-items-center px-4">
-      <div className="stars" aria-hidden />
+      <Starfield />
       <form onSubmit={submit} className="panel relative z-10 w-full max-w-sm p-6 text-center">
         <Logo className="mb-6 justify-center" />
         <Lock className="mx-auto mb-3 h-8 w-8 text-accent" aria-hidden />

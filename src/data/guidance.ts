@@ -22,7 +22,7 @@ export interface GuidanceCard {
 const cards: GuidanceCard[] = [
   {
     id: 'resistive',
-    title: 'Resistive exercise protocol',
+    title: 'Strength exercise plan',
     category: 'Exercise',
     summary: 'Heavy loading is the most effective countermeasure against bone and muscle loss in microgravity.',
     hazards: ['gravity'],
@@ -44,7 +44,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'aerobic',
-    title: 'Aerobic conditioning',
+    title: 'Cardio exercise plan',
     category: 'Exercise',
     summary: 'Keeps your heart and lungs fit and reduces dizziness and fainting risk after landing.',
     hazards: ['gravity'],
@@ -63,7 +63,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'nutrition-bone',
-    title: 'Nutrition for bone, muscle & energy',
+    title: 'Eating for strong bones and muscles',
     category: 'Nutrition & Hydration',
     summary: 'Eating enough is the foundation. Weight loss in space is usually from under-eating.',
     hazards: ['gravity', 'distance'],
@@ -82,7 +82,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'hydration',
-    title: 'Hydration & kidney stone prevention',
+    title: 'Drinking enough water',
     category: 'Nutrition & Hydration',
     summary: 'Thirst is weaker in space, and bone calcium released into urine raises kidney stone risk.',
     hazards: ['gravity', 'environment'],
@@ -119,7 +119,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'breathing',
-    title: '4-7-8 breathing',
+    title: 'Calm breathing (4-7-8)',
     category: 'Behavioral',
     summary: 'A 2-minute breathing pattern that activates the parasympathetic system to reduce stress and help sleep.',
     hazards: ['isolation'],
@@ -149,7 +149,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'workload',
-    title: 'Workload & fatigue management',
+    title: 'Too tired or too busy',
     category: 'Behavioral',
     summary: 'High workload plus sleep loss leads to errors. Rebalance before critical operations.',
     hazards: ['isolation', 'distance'],
@@ -166,7 +166,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'radiation-shelter',
-    title: 'Solar particle event: storm shelter protocol',
+    title: 'Solar storm: go to the shelter',
     category: 'Radiation',
     summary: 'An SPE can deliver a large dose in hours. Shielding with mass (water, food, equipment) reduces it a lot.',
     hazards: ['radiation', 'distance'],
@@ -186,7 +186,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'motion-sickness',
-    title: 'Space motion sickness',
+    title: 'Space sickness (feeling sick)',
     category: 'Medical',
     summary: 'Affects most astronauts during the first 2–3 days or after gravity changes. It usually resolves on its own.',
     hazards: ['gravity'],
@@ -203,7 +203,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'sans-check',
-    title: 'SANS self-check (vision)',
+    title: 'Eye self-check',
     category: 'Medical',
     summary: 'Simple eye checks you can do yourself to catch Spaceflight-Associated Neuro-ocular Syndrome early.',
     hazards: ['gravity', 'environment'],
@@ -224,7 +224,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'bp-recheck',
-    title: 'Blood pressure recheck protocol',
+    title: 'How to recheck your blood pressure',
     category: 'Medical',
     summary: 'One high reading is often noise. Recheck properly before acting.',
     hazards: ['gravity'],
@@ -242,7 +242,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'orthostatic',
-    title: 'Gravity transition & dizziness',
+    title: 'Dizziness when gravity comes back',
     category: 'Medical',
     summary: 'After weightlessness, blood pools in the legs on standing. Plan transitions carefully.',
     hazards: ['gravity'],
@@ -259,7 +259,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'co2',
-    title: 'CO₂ & air quality',
+    title: 'Cabin air & headaches (CO₂)',
     category: 'Environment',
     summary: 'Spacecraft CO₂ is about 10× higher than Earth air. It is linked to headaches and may contribute to SANS.',
     hazards: ['environment'],
@@ -275,7 +275,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'infection',
-    title: 'Infection control & fever care',
+    title: 'Fever & stopping germs spreading',
     category: 'Medical',
     summary: 'In a sealed vehicle, one infection can spread to the whole crew. Act early.',
     hazards: ['environment', 'isolation'],
@@ -318,7 +318,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'emergency-cardio',
-    title: 'Cardiopulmonary emergency',
+    title: 'Chest pain or can\'t breathe: emergency',
     category: 'Medical',
     summary: 'Chest pain, collapse or severe breathlessness: the crew acts first, the ground advises later.',
     hazards: ['distance'],
@@ -336,7 +336,7 @@ const cards: GuidanceCard[] = [
   },
   {
     id: 'medication',
-    title: 'Medication reminders & safety',
+    title: 'Taking medicines safely',
     category: 'Medical',
     summary: 'Space can alter how drugs work, and medications degrade faster with radiation exposure.',
     hazards: ['radiation', 'distance'],

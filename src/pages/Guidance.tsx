@@ -8,6 +8,7 @@ import type { StatusLevel } from '@/types';
 import { cn } from '@/utils';
 import { ExternalLink, HazardBadges, PageHeader, Panel, StatusBadge } from '@/components/ui';
 import { resourceById } from '@/data/resources';
+import { GlossaryPanel } from '@/features/glossary/GlossaryPanel';
 import { Breathing } from './Cognitive';
 
 function CardDetail({ card, level }: { card: GuidanceCard; level: StatusLevel }) {
@@ -160,6 +161,9 @@ export default function Guidance({ id }: { id?: string }) {
             </a>
           );
         })}
+      </div>
+      <div className="mt-8">
+        <GlossaryPanel />
       </div>
     </>
   );

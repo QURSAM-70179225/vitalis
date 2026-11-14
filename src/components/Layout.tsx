@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
+import { Starfield } from '@/components/Starfield';
 import {
   Activity,
   Award,
@@ -22,6 +23,7 @@ import {
   Cloud,
   CloudOff,
   Library,
+  Map as MapIcon,
   MonitorDot,
   RefreshCw,
   type LucideIcon,
@@ -45,6 +47,7 @@ export const NAV: NavItem[] = [
   { id: 'live', label: 'Live Monitor', icon: Radio },
   { id: 'checkin', label: 'Check-In', icon: ClipboardCheck },
   { id: 'trends', label: 'Trends', icon: Activity },
+  { id: 'journey', label: 'Health Journey', icon: MapIcon },
   { id: 'cognitive', label: 'Mind', icon: Brain },
   { id: 'guidance', label: 'Guidance', icon: BookOpenCheck },
   { id: 'schedule', label: 'Schedule', icon: CalendarClock },
@@ -56,7 +59,7 @@ export const NAV: NavItem[] = [
 ];
 
 const CONSOLE_ITEM: NavItem = { id: 'console', label: 'Ground Console', icon: MonitorDot };
-const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'crew', 'guidance', 'settings', 'about'];
+const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'journey', 'crew', 'guidance', 'settings', 'about'];
 
 /** Navigation for the current account: Mission Control sees the console, not personal health pages. */
 export function useNav(): NavItem[] {
@@ -64,9 +67,9 @@ export function useNav(): NavItem[] {
   const demo = useApp((s) => s.mission?.demo ?? false);
   const signedIn = !!cloud.userId && !demo;
   const all = [CONSOLE_ITEM, ...NAV];
-  if (!signedIn) return [...NAV.slice(0, 9), CONSOLE_ITEM, ...NAV.slice(9)];
+  if (!signedIn) return [...NAV.slice(0, 10), CONSOLE_ITEM, ...NAV.slice(10)];
   if (cloud.role === 'ground') return GROUND_PAGES.map((id) => all.find((n) => n.id === id)!);
-  if (cloud.role === 'cmo') return [...NAV.slice(0, 9), CONSOLE_ITEM, ...NAV.slice(9)];
+  if (cloud.role === 'cmo') return [...NAV.slice(0, 10), CONSOLE_ITEM, ...NAV.slice(10)];
   return NAV.filter((n) => n.id !== 'crew');
 }
 
@@ -324,7 +327,7 @@ function BottomNav() {
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen">
-      <div className="stars" aria-hidden />
+      <Starfield />
       <a href="#main" className="skip-link">
         Skip to content
       </a>

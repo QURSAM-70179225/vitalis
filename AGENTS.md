@@ -1,6 +1,6 @@
 # AGENTS.md — Guide for AI coding agents (and humans)
 
-Instructions for anyone — Claude, Codex, Copilot, Cursor or a person — changing this repository. Read [ARCHITECTURE_ESSENTIALS.md](ARCHITECTURE_ESSENTIALS.md) first; details are in [ARCHITECTURE.md](ARCHITECTURE.md) and requirements in [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md).
+Instructions for anyone — a person or an AI coding tool — changing this repository. Read [ARCHITECTURE_ESSENTIALS.md](ARCHITECTURE_ESSENTIALS.md) first; details are in [ARCHITECTURE.md](ARCHITECTURE.md) and requirements in [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md).
 
 ## Project in one paragraph
 VITALIS is an offline-first React + TypeScript PWA for astronaut health monitoring. A pure, rule-based triage engine turns readings into status → explanation → action → escalation. Sensors (Bluetooth GATT, USB/Wi-Fi suit telemetry, simulator) stream into a device hub. An optional Supabase backend adds accounts, Row-Level-Security-protected sync and a realtime Ground Console. Without Supabase env vars it runs fully local; `?demo=1` loads a seeded 90-day Mars mission.

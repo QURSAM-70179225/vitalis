@@ -9,12 +9,47 @@ import { SYSTEMS } from '@/data/systems';
 import { LEVEL_META } from './status';
 import { escalationPlan } from './escalation';
 import type { Insight } from './insights';
+import type { BodyChange } from './journey';
 
 export interface AssistantContext {
   triage: TriageResult;
   delaySec: number;
   callsign: string;
   insights: Insight[];
+  /** How the body has changed over recent weeks (Health Journey). */
+  changes?: BodyChange[];
+}
+
+const SUMMARY_VITALS: IndicatorId[] = ['heartRate', 'systolic', 'spo2', 'temperature', 'sleepHours', 'mood', 'radiationDose'];
+const MARK: Record<string, string> = { nominal: '✅', monitor: '⚠️', act: '🟠', critical: '🔴' };
+
+/** The chatbot's opening message: today's condition, vitals and what to do, in plain words. */
+export function dailySummary(ctx: AssistantContext): string {
+  const t = ctx.triage;
+  const opener = {
+    nominal: `Good news, ${ctx.callsign}: you're doing well today. 💚`,
+    monitor: `Hi ${ctx.callsign}. You're mostly fine today, with a couple of things to keep an eye on.`,
+    act: `Hi ${ctx.callsign}. You're okay, but something needs your attention today.`,
+    critical: `${ctx.callsign}, something important needs attention right now. Stay calm and follow the steps below.`,
+  }[t.overall];
+  const lines: string[] = [];
+  for (const id of SUMMARY_VITALS) {
+    const a = t.indicators[id];
+    if (!a) continue;
+    const meta = INDICATORS[id];
+    const v = id === 'mood' ? `${a.value}/5` : `${Number(a.value.toFixed(id === 'radiationDose' ? 2 : 1))} ${meta.unit}`;
+    lines.push(`${MARK[a.level]} ${meta.label}: ${v}${a.level === 'nominal' ? '' : ` (${LEVEL_META[a.level].label.toLowerCase()})`}`);
+  }
+  const todo = t.alerts.length ? t.alerts[0].actions.slice(0, 3).map((x, i) => `${i + 1}. ${x}`) : ['1. Keep up your exercise, water and sleep', '2. Do your daily check-in tomorrow morning'];
+  return [
+    opener,
+    `**Today's readings**\n${lines.length ? lines.join('\n') : 'No readings yet today. Do a check-in so I can tell you more.'}`,
+    t.alerts[0] ? `**Most important:** ${t.alerts[0].title}\nWhy: ${t.alerts[0].why[0]}` : '',
+    `**What to do today**\n${todo.join('\n')}`,
+    'Ask me anything, like "what should I do now?", "how is my sleep?" or "how am I changing over time?".',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 const TOPICS: { keys: RegExp; systems?: SystemId[]; indicators?: IndicatorId[]; guidance?: string }[] = [
@@ -82,6 +117,12 @@ export function answerOffline(question: string, ctx: AssistantContext): string {
   if (/what should i do|action|next|help|todo|to do/i.test(q)) {
     if (!t.alerts.length) return `Everything is nominal, ${ctx.callsign}. Keep your routine: morning check-in, resistive and aerobic blocks, 2+ L fluids and a protected sleep window.${footer(ctx)}`;
     return `Here's your priority list, most urgent first:\n\n${t.alerts.slice(0, 3).map(describeAlert).join('\n\n')}${footer(ctx)}`;
+  }
+  if (/over time|progress|chang|journey|trend|month|weeks|long.?term|30 days|40 days/i.test(q)) {
+    const ch = ctx.changes ?? [];
+    if (!ch.length) return `I need a few more weeks of check-ins to show how your body is changing.${footer(ctx)}`;
+    const icon = { good: '✅', watch: '⚠️', concern: '🟠' } as const;
+    return `Here's how living in space has changed you recently (open **Health Journey** for the full map):\n\n${ch.map((c) => `${icon[c.verdict]} ${c.headline}. ${c.why}`).join('\n')}${footer(ctx)}`;
   }
   if (/ready|readiness|score/i.test(q)) {
     const flagged = Object.values(t.systems).filter((s) => s.level !== 'nominal');

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Starfield } from '@/components/Starfield';
 import { motion } from 'framer-motion';
 import { ArrowRight, PlayCircle, Radiation, Radio, Rocket, Weight, WifiOff } from 'lucide-react';
 import { useApp } from '@/store/useApp';
@@ -86,7 +87,7 @@ export function Onboarding() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="stars" aria-hidden />
+      <Starfield />
       <main id="main" className="relative z-10 mx-auto max-w-5xl px-4 py-8 sm:py-12">
         <Logo className="mb-10" />
         {step === 0 && (

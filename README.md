@@ -55,7 +55,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md) | Problem, personas, user stories, functional & non-functional requirements, metrics, risks |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Full architecture: layers, flows, data model, security model, decisions |
 | [ARCHITECTURE_ESSENTIALS.md](ARCHITECTURE_ESSENTIALS.md) | One-page architecture summary |
-| [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md) | Rules and commands for AI coding agents and contributors |
+| [AGENTS.md](AGENTS.md) | Rules and commands for contributors |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Netlify or Cloudflare Pages |
 | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Accounts setup · sensor integration |
 
@@ -68,7 +68,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 16 indicators plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map** | Hand-built SVG figure, front and back. 8 clickable, keyboard-focusable systems coloured by status. The **heart pulses at your latest HR**, and flagged regions glow. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
-| 4 | **Risk & triage engine** | Transparent and rule-based, with **87 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
+| 4 | **Risk & triage engine** | Transparent and rule-based, with **103 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
 | 5 | **Trends & analytics** | Recharts for all 19 indicators: shaded **normal band**, shaded **personal baseline band**, status-coloured points, **event markers** (EVA, solar event, illness, intervention), a 7/30/90-day toggle, and **correlation insights** (*"On days with <6 h sleep, your reaction time was 25% slower"*). |
 | 6 | **Cognitive & behavioral health** | 2-minute **PVT** reaction-time test (mean/median RT, lapses ≥500 ms, false starts, compared to baseline). **Mood journal** with private notes, a 5-item **isolation & confinement wellbeing score**, a *connect-with-home* reminder, and an animated **4-7-8 breathing** guide. |
 | 7 | **Countermeasures library** | 19 sourced protocol cards: resistive and aerobic exercise, nutrition, hydration, sleep under spacecraft lighting, **SPE storm-shelter protocol**, SANS self-check, motion sickness, infection control, medication safety, and more. Every flagged indicator links straight to its card. |
@@ -83,6 +83,13 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 16 | **Ground Console** | For Mission Control and the CMO: crew cards with readiness, triage status and **live sensor strips**; a realtime act/critical **alert feed with acknowledge**; per-crew **messages** (delivered to the astronaut's Ground Link inbox); health packets with one-click PDF. |
 | 17 | **Radiation exposure panel** | Today's dose vs the environment's typical level, mission total vs the NASA 600 mSv career limit, peak day (e.g. solar particle event), days left at the current rate. Built around the CSA radiation-monitoring resource. |
 | 18 | **About & Sources** | All five official Space Apps resources with links, how each shaped the app, "Benefits on Earth", and the non-endorsement statement. |
+| 19 | **Health Journey** | A day-by-day **health map** (body areas × days, 30/40/60/90-day views) with mission events marked, a **body replay** that animates your body day by day, and **"How space is changing your body"** cards comparing your first and latest days (weight, heart, blood pressure, sleep, mood, strength exercise, reactions, radiation) in plain words. |
+| 20 | **Many ways to enter data** | Check-in starts with *"How do you want to add today's numbers?"*: type them in, **scan a health report** (photo or pasted text → values found automatically, you confirm), **connect a Bluetooth device**, or use the **camera**. |
+| 21 | **Feelings & home** | Days away from Earth, a **30-day mood calendar**, and **"Right now, this might help"** suggestions that change with your mood, stress and sleep (talk to a crewmate, message home, calm breathing, 3 good things). |
+| 22 | **Status banner + sounds** | A big banner says how you are today (*"You're doing well today 💚"* or a pulsing red *"Get medical help now"*). On opening the app: a soft chime when all is good, a loud repeating beep + phone vibration when urgent. Can be turned off in Settings. |
+| 23 | **Plain language** | No medical training needed: simple names ("Oxygen in your blood", "Blood pressure (top number)", "Take action today"), plain explanations in every alert, and a **"Medical words made simple"** glossary. |
+| 24 | **Chatbot daily summary** | The assistant opens by telling you today's condition, your readings (✅ ⚠️ 🔴) and what to do today, and can answer *"How am I changing over time?"*. |
+| 25 | **Animated space background** | Twinkling, slowly drifting stars and the occasional shooting star (still when "reduce motion" is on). |
 | – | **Calm mode** | For emergencies: strips the UI to one huge, high-contrast instruction checklist with *Alert CMO* and *Send packet* buttons. |
 
 ### The demo mission story (ARES-1, Mars Transit, SOL 90)
@@ -252,7 +259,7 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ## Quality
 
 - **TypeScript strict**, no `any` (enforced by ESLint `no-explicit-any`). `npm run lint` is clean.
-- **87 Vitest tests** cover thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
+- **103 Vitest tests** cover thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
 - **Lighthouse** (production build, mobile emulation):
 
   | Page | Accessibility | Best practices | Performance |

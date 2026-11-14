@@ -29,6 +29,7 @@ const Camera = lazy(() => import('@/pages/Camera'));
 const Live = lazy(() => import('@/pages/Live'));
 const Console = lazy(() => import('@/pages/Console'));
 const About = lazy(() => import('@/pages/About'));
+const Journey = lazy(() => import('@/pages/Journey'));
 const Assistant = lazy(() => import('@/features/assistant/Assistant'));
 const Tour = lazy(() => import('@/features/tour/Tour'));
 
@@ -51,6 +52,7 @@ function Page() {
     case 'live': return <OwnDataGuard what="sensor data"><Live /></OwnDataGuard>;
     case 'console': return <Console />;
     case 'about': return <About />;
+    case 'journey': return <Journey />;
     case 'trends': return <Trends initial={param} />;
     case 'system': return <SystemDetail id={param} />;
     case 'cognitive': return <OwnDataGuard what="reaction tests or journal entries"><Cognitive /></OwnDataGuard>;

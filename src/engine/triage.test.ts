@@ -86,9 +86,9 @@ describe('evaluate: baseline layer', () => {
     expect(hr.absoluteLevel).toBe('nominal'); // 71 bpm is within 45–100
     expect(hr.sustained).toBe('high');
     expect(hr.level).toBe('act');
-    expect(hr.reasons[0]).toMatch(/18% above your personal baseline for 3 days/);
+    expect(hr.reasons[0]).toMatch(/18% higher than your normal for 3 days/);
     const alert = r.alerts.find((a) => a.id === 'ind-heartRate')!;
-    expect(alert.title).toMatch(/abnormal for you/);
+    expect(alert.title).toMatch(/unusual for you/);
     expect(alert.ruleId).toBe('personal-baseline');
   });
 
@@ -109,7 +109,7 @@ describe('evaluate: absolute layer', () => {
   it('flags absolute thresholds with explanation', () => {
     const r = evaluate({ crewId: 'a', checkIns: history(10, (d) => (d === 10 ? { values: { spo2: 89 } } : {})), environment: env });
     expect(r.indicators.spo2!.absoluteLevel).toBe('act');
-    expect(r.indicators.spo2!.reasons[0]).toMatch(/at or below the threshold of 91/);
+    expect(r.indicators.spo2!.reasons[0]).toMatch(/below the safe limit of 91/);
   });
 
   it('honours threshold overrides', () => {
@@ -175,7 +175,7 @@ describe('evaluate: combination rules', () => {
     const r = evaluate({ crewId: 'a', checkIns, environment: env });
     const a = r.alerts.find((x) => x.ruleId === 'bone-loss-proxy')!;
     expect(a.level).toBe('act');
-    expect(a.why.join(' ')).toMatch(/33% of the 45-min target/);
+    expect(a.why.join(' ')).toMatch(/33% of the 45-min goal/);
   });
 
   it('chest pain is always critical', () => {
@@ -269,7 +269,7 @@ describe('demo mission story', () => {
     const ins = computeInsights(own, cog);
     const rt = ins.find((i) => i.id === 'sleep-rt');
     expect(rt).toBeDefined();
-    expect(rt!.text).toMatch(/reaction time \(pvt\) was \d+% slower/);
+    expect(rt!.text).toMatch(/reaction speed was \d+% slower/);
   });
 
   it('schedule adapts to risk (BP twice daily while flagged)', () => {
@@ -287,5 +287,12 @@ describe('guideline edges are nominal', () => {
     ['hydration', 2000],
   ] as const)('%s = %d is nominal', (id, v) => {
     expect(levelFromBands(v, THRESHOLDS[id].bands).level).toBe('nominal');
+  });
+});
+
+describe('number wording', () => {
+  it('shows the real decimals so value and limit never look equal by rounding', () => {
+    const r = evaluate({ crewId: 'a', checkIns: history(10, (d) => (d === 10 ? { values: { sleepHours: 6.75 } } : {})), environment: env });
+    expect(r.indicators.sleepHours!.reasons[0]).toMatch(/is 6\.75 h, below the safe limit of 6\.75/);
   });
 });

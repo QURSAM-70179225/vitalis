@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Starfield } from '@/components/Starfield';
 import { motion } from 'framer-motion';
 import { KeyRound, Loader2, LogIn, LogOut, PlayCircle, Rocket, Satellite, ShieldCheck, Stethoscope, UserPlus, UserRound, Users } from 'lucide-react';
 import type { EnvironmentId, Role } from '@/types';
@@ -11,7 +12,7 @@ import { EnvironmentPicker } from './Onboarding';
 function Shell({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="stars" aria-hidden />
+      <Starfield />
       <main id="main" className={cn('relative z-10 mx-auto px-4 py-8 sm:py-12', wide ? 'max-w-5xl' : 'max-w-md')}>
         <Logo className="mb-8" />
         {children}

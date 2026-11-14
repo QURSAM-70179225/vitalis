@@ -3,6 +3,7 @@ import { DISCLAIMER_ENDORSEMENT, EARTH_BENEFITS, RESOURCES } from '@/data/resour
 import { HAZARD_LIST } from '@/data/hazards';
 import { DISCLAIMER } from '@/engine/thresholds';
 import { ExternalLink, HazardIcon, PageHeader, Panel } from '@/components/ui';
+import { GlossaryPanel } from '@/features/glossary/GlossaryPanel';
 
 export default function About() {
   return (
@@ -72,6 +73,10 @@ export default function About() {
           ))}
         </div>
       </section>
+
+      <div className="mb-8">
+        <GlossaryPanel />
+      </div>
 
       <Panel className="flex items-start gap-3">
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden />

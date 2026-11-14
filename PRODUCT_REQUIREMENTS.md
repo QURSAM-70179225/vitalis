@@ -89,6 +89,12 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **FR-22** | Ground Console | Crew cards with live sensor strips; realtime act/critical alert feed with acknowledge; per-crew messages; packets with PDF. | ✅ (demo + mocked API) 🧪 (live Realtime) |
 | **FR-24** | Radiation exposure summary | Dashboard panel: today's dose (× environment typical), mission total vs NASA 600 mSv career limit with progress bar, peak day, days left at the current 7-day rate; CSA radiation-monitoring resource linked. | ✅ |
 | **FR-25** | Sources & non-endorsement | About & Sources page lists the 5 official Space Apps resources (NASA HRP hazards, risks, ongoing research; CSA radiation monitoring; CSA science in space) with how each is used, Benefits on Earth, and a non-endorsement statement; guides and body-system panels link to the relevant resource. | ✅ |
+| **FR-26** | Health journey | Health map of 8 body areas × days for 30/40/60/90 days with events; animated body replay; first-vs-latest comparison with plain explanations of how space affects each measure. | ✅ |
+| **FR-27** | Input methods & report scan | Check-in offers typing, report scan (photo via browser text detector, or pasted text), Bluetooth device, camera; values found in reports are confirmed by the user before use. | ✅ (text) 🧪 (photo: browsers with a text detector) |
+| **FR-28** | Emotional wellbeing far from home | Days away, 30-day mood calendar, mood-aware support suggestions, coping question about distance from home. | ✅ |
+| **FR-29** | Status banner & alert sounds | Plain-language banner; chime when all good, repeating beep + vibration when urgent; replay button; setting to turn off. | ✅ |
+| **FR-30** | Plain language | Everyday names for statuses, measurements, body areas and alerts; glossary of medical words. | ✅ |
+| **FR-31** | Chatbot daily summary | Assistant opens with today's condition, readings and actions; answers progress-over-time questions. | ✅ |
 | **FR-23** | Settings & data | Units, high contrast, reduced motion, threshold editing, passcode lock, export/import/wipe, invite codes, sign out. | ✅ |
 
 ## 7. Non-functional requirements
@@ -101,7 +107,7 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
 | **Reliability** | Error boundary per page; outbox retries with poison-item protection; idempotent upserts with device-generated IDs. |
 | **Performance** | Code-split pages; heavy libraries (charts, PDF) lazy-loaded; charts mount on scroll. |
-| **Quality** | TypeScript strict, no `any`; ESLint clean; 87 unit tests; RLS SQL tests. |
+| **Quality** | TypeScript strict, no `any`; ESLint clean; 103 unit tests; RLS SQL tests. |
 | **Safety** | Every screen states decision support, not diagnosis; thresholds carry sources; LLM output always followed by rule-engine triage. |
 
 ## 8. Success metrics

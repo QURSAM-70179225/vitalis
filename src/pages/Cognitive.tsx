@@ -9,15 +9,16 @@ import { MOOD_EMOJI, MOOD_LABELS } from '@/data/indicators';
 import { LEVEL_META } from '@/engine/status';
 import { cn, uid } from '@/utils';
 import { HazardBadges, PageHeader, Panel, Sparkline, StatusBadge } from '@/components/ui';
+import { AwayFromHome } from '@/features/wellbeing/AwayFromHome';
 
 type Tab = 'pvt' | 'journal' | 'breathe';
 
 export default function Cognitive() {
   const [tab, setTab] = useState<Tab>('pvt');
   const tabs: { id: Tab; label: string; icon: typeof Zap }[] = [
-    { id: 'pvt', label: 'Reaction Time Test', icon: Zap },
-    { id: 'journal', label: 'Mood journal', icon: HeartHandshake },
-    { id: 'breathe', label: 'Breathing 4-7-8', icon: Wind },
+    { id: 'pvt', label: 'Reaction speed test', icon: Zap },
+    { id: 'journal', label: 'Feelings & home', icon: HeartHandshake },
+    { id: 'breathe', label: 'Calm breathing', icon: Wind },
   ];
   return (
     <>
@@ -39,7 +40,12 @@ export default function Cognitive() {
       </div>
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
         {tab === 'pvt' && <PvtTest />}
-        {tab === 'journal' && <Journal />}
+        {tab === 'journal' && (
+          <>
+            <AwayFromHome />
+            <Journal />
+          </>
+        )}
         {tab === 'breathe' && <Breathing />}
       </div>
     </>
@@ -291,6 +297,7 @@ const WB_QUESTIONS = [
   'I have enough privacy and personal time',
   'I feel in control of my workload',
   'I am finding meaning or enjoyment in the mission',
+  'I feel okay being so far from home',
 ];
 
 function Journal() {
@@ -329,7 +336,7 @@ function Journal() {
           ))}
         </div>
         <fieldset className="mb-5">
-          <legend className="label">Isolation & confinement wellbeing (1 = disagree, 5 = agree)</legend>
+          <legend className="label">How are you coping? (1 = not at all, 5 = very much)</legend>
           <div className="space-y-3">
             {WB_QUESTIONS.map((q, qi) => (
               <div key={q} className="flex flex-wrap items-center justify-between gap-2">
@@ -373,7 +380,7 @@ function Journal() {
               <Phone className="h-5 w-5 text-accent" aria-hidden /> Connect with home
             </h2>
             <p className="text-sm">
-              {Number.isFinite(daysSinceHome) ? `It's been ${daysSinceHome} days since you logged contact with home.` : "You haven't logged contact with home yet."} Record a short video letter, or book your Private Family Conference.
+              {Number.isFinite(daysSinceHome) ? `It's been ${daysSinceHome} days since you logged contact with home.` : "You haven't logged contact with home yet."} Record a short video message, or book a private video call with your family.
             </p>
             <a href="#/guidance/connect-home" className="mt-2 inline-block text-sm font-semibold text-accent hover:underline">
               Ideas for staying connected →

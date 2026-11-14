@@ -30,25 +30,25 @@ export function escalationPlan(level: StatusLevel, oneWayDelaySec: number, alert
   switch (level) {
     case 'critical':
       headline = realtime
-        ? 'Contact the flight surgeon now (near-real-time link). Start these steps while you connect:'
-        : `Ground response in ~${roughDuration(roundTripSec)} at the earliest. Start these steps now:`;
+        ? 'Call the doctors on Earth now. Start these steps while you connect:'
+        : `The doctors on Earth can answer in ~${roughDuration(roundTripSec)} at the earliest. Start these steps now:`;
       contact = realtime
-        ? 'Open a Private Medical Conference (PMC) with the flight surgeon. Alert your CMO.'
-        : 'Alert your CMO now. Send a health packet to the ground. Do not wait for a reply before acting.';
+        ? 'Call the doctors on Earth on a private line, and tell your crew medical officer.'
+        : 'Tell your crew medical officer now and send your health report to Earth. Don\'t wait for their reply before you act.';
       break;
     case 'act':
       headline = realtime
-        ? 'Start the countermeasure today and mention it at your next medical conference.'
-        : `Start the countermeasure today. The ground will see it in ~${roughDuration(oneWayDelaySec)}, and a reply takes ~${roughDuration(roundTripSec)} or more.`;
-      contact = 'Inform your Crew Medical Officer. Include it in today\'s ground packet.';
+        ? 'Do the steps today and mention it at your next call with the doctors.'
+        : `Do the steps today. Earth will see your report in about ${roughDuration(oneWayDelaySec)}, and an answer takes ${roughDuration(roundTripSec)} or more.`;
+      contact = 'Tell your crew medical officer, and include it in today\'s report to Earth.';
       break;
     case 'monitor':
-      headline = 'Keep an eye on it. Recheck as suggested and follow the guidance card.';
-      contact = 'No contact needed unless it gets worse.';
+      headline = 'Keep an eye on it. Check again later and follow the tips.';
+      contact = 'No need to call anyone unless it gets worse.';
       break;
     default:
-      headline = 'All nominal. Continue your normal routine.';
-      contact = 'No contact needed.';
+      headline = 'All good. Carry on with your normal day.';
+      contact = 'No need to call anyone.';
   }
   return { level, realtime, roundTripSec, headline, steps, contact };
 }

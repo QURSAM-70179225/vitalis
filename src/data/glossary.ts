@@ -1,0 +1,21 @@
+/** Medical and space words explained in everyday language. */
+export const GLOSSARY: { term: string; simple: string }[] = [
+  { term: 'Baseline (your normal)', simple: 'Your own usual numbers, worked out from your last 2 weeks. VITALIS compares today with you, not with everyone else.' },
+  { term: 'Blood pressure (top / bottom number)', simple: 'How hard your blood pushes on your blood vessels. Top number = when your heart beats, bottom number = when it rests. Written like 120/80.' },
+  { term: 'Oxygen in your blood (SpO₂)', simple: 'How much oxygen your blood is carrying, in percent. 95–100% is normal.' },
+  { term: 'Heart rate (bpm)', simple: 'How many times your heart beats in one minute.' },
+  { term: 'HRV (heartbeat rhythm variation)', simple: 'Small changes in time between heartbeats. Lower than usual can mean you are tired or stressed.' },
+  { term: 'Blood sugar (glucose)', simple: 'The sugar in your blood that gives you energy. Measured before breakfast.' },
+  { term: 'SANS', simple: 'Eye changes from living without gravity: fluid moves to your head and can press on your eyes, making close-up things look blurry.' },
+  { term: 'Dosimeter / mSv', simple: 'A dosimeter is a radiation badge you wear. mSv (millisievert) is the unit for how much radiation your body got.' },
+  { term: 'Solar storm (solar particle event)', simple: 'A burst of fast particles from the Sun. It can raise radiation a lot within hours, so you go to the shelter.' },
+  { term: 'Microgravity / 0 g', simple: 'Feeling weightless. Your body works differently without gravity pulling on it.' },
+  { term: 'Strength exercise (resistive)', simple: 'Lifting or pushing against weight, like squats. Keeps bones and muscles strong in space.' },
+  { term: 'Cardio exercise (aerobic)', simple: 'Running or cycling that makes your heart and lungs work harder.' },
+  { term: 'Reaction speed test (PVT)', simple: 'A 2-minute game: tap as fast as you can when a number appears. Slow taps can mean you are tired.' },
+  { term: 'EVA (spacewalk)', simple: 'Going outside the spacecraft in a space suit.' },
+  { term: 'CO₂', simple: 'The gas you breathe out. If too much builds up in the cabin or suit, it can cause headaches.' },
+  { term: 'Crew medical officer (CMO)', simple: 'The crew member trained to give medical care on board.' },
+  { term: 'Flight surgeon', simple: 'The doctor on Earth who looks after the crew.' },
+  { term: 'Comm delay', simple: 'The time a message takes to travel between the spacecraft and Earth. From Mars it can be up to 22 minutes each way.' },
+];

@@ -47,11 +47,14 @@ const STALENESS: Partial<Record<IndicatorId, number>> = {
 };
 const DEFAULT_STALENESS = 1;
 
-const fmt = (v: number, digits = 0) => v.toFixed(digits).replace(/\.0+$/, '');
+/** Fixed decimals without trailing zeros (6.50 → 6.5, 7.00 → 7). */
+const fmt = (v: number, digits = 0) => (digits ? v.toFixed(digits).replace(/0+$/, '').replace(/\.$/, '') : v.toFixed(0));
 
 function digitsFor(id: IndicatorId): number {
+  // As many decimals as the input step has (0.25 → 2, 0.1 → 1, 1 → 0).
   const step = INDICATORS[id].step;
-  return step < 0.1 ? 2 : step < 1 ? 1 : 0;
+  const dec = (String(step).split('.')[1] ?? '').length;
+  return Math.min(2, dec);
 }
 
 // ---------------------------------------------------------------------------
@@ -104,14 +107,14 @@ export function assessIndicator(
   const abs = levelFromBands(bv, cfg.bands);
   if (abs.level !== 'nominal' && abs.bound !== undefined) {
     if (cfg.mode === 'relativeToStart') {
-      reasons.push(`${meta.label} ${bv >= 0 ? 'up' : 'down'} ${fmt(Math.abs(bv), 1)}% since mission start (limit ${fmt(Math.abs(abs.bound))}%)`);
+      reasons.push(`${meta.label} has gone ${bv >= 0 ? 'up' : 'down'} ${fmt(Math.abs(bv), 1)}% since the start of the mission (safe limit: ${fmt(Math.abs(abs.bound))}%)`);
     } else if (cfg.mode === 'envScaled') {
       reasons.push(
-        `${meta.label} ${fmt(last.value, 2)} ${meta.unit} is ${fmt(bv, 1)}× the typical ${env.short} level (${fmt(env.baselineDoseMsvPerDay, 2)} ${meta.unit}/day)`,
+        `${meta.label} was ${fmt(last.value, 2)} ${meta.unit}, ${fmt(bv, 1)} times more than normal here (normal: ${fmt(env.baselineDoseMsvPerDay, 2)} ${meta.unit} a day)`,
       );
     } else {
       reasons.push(
-        `${meta.label} ${fmt(last.value, d)} ${meta.unit} is ${abs.dir === 'high' ? 'at or above' : 'at or below'} the threshold of ${fmt(abs.bound, d)}`,
+        `${meta.label} is ${fmt(last.value, d)} ${meta.unit}, ${abs.dir === 'high' ? 'above' : 'below'} the safe limit of ${fmt(abs.bound, d)}`,
       );
     }
   }
@@ -134,11 +137,11 @@ export function assessIndicator(
     if (trend) {
       const days = countSustained(values, baseline, sustained as 'high' | 'low');
       reasons.push(
-        `${meta.label} ${fmt(Math.abs(pct), 0)}% ${sustained === 'high' ? 'above' : 'below'} your personal baseline for ${days} days (baseline ${fmt(baseline.mean, d)} ${meta.unit})`,
+        `${meta.label} has been ${fmt(Math.abs(pct), 0)}% ${sustained === 'high' ? 'higher' : 'lower'} than your normal for ${days} days (your normal: ${fmt(baseline.mean, d)} ${meta.unit})`,
       );
     } else if (zFlag) {
       reasons.push(
-        `${meta.label} is ${fmt(Math.abs(z), 1)} SD ${zDir === 'high' ? 'above' : 'below'} your personal baseline (${fmt(baseline.mean, d)} ± ${fmt(baseline.sd, d || 1)} ${meta.unit})`,
+        `${meta.label} is much ${zDir === 'high' ? 'higher' : 'lower'} than usual for you (your normal is about ${fmt(baseline.mean, d)} ${meta.unit})`,
       );
     }
     if (trend && Math.abs(z) >= BASELINE.zFlag) baselineLevel = 'act';
@@ -206,22 +209,22 @@ const solarParticleEvent: Rule = (ctx) => {
     id: `spe-${ctx.day}`,
     ruleId: 'solar-particle-event',
     level: ratio >= critAt ? 'critical' : 'act',
-    title: 'Radiation spike: Solar Particle Event protocol',
+    title: 'Radiation spike: likely a solar storm. Go to the shelter',
     why: [
       `Dosimeter read ${fmt(v, 2)} mSv in 24 h, ${fmt(ratio, 1)}× the typical ${ctx.env.short} level`,
-      'A sudden jump like this usually means a solar particle event (SPE)',
+      'A sudden jump like this usually means a solar storm (a burst of particles from the Sun)',
     ],
     systems: ['immune', 'skin', 'sans'],
     hazards: ['radiation', 'distance'],
     guidanceIds: ['radiation-shelter'],
     actions: [
-      'Move to the storm shelter (the most shielded area, such as water-wall crew quarters) now',
-      'Keep your active dosimeter on your chest and log the readings every 30 minutes',
-      'Stay sheltered until the all-clear: dose rate back below 2× typical',
-      'Postpone any EVA',
+      'Go to the storm shelter now (the best-protected area, for example crew quarters surrounded by water tanks)',
+      'Keep your radiation badge (dosimeter) on your chest and write down the reading every 30 minutes',
+      'Stay in the shelter until the reading is back below double the normal level',
+      'Do not go on a spacewalk',
       'Drink fluids and report any nausea, vomiting or fatigue',
     ],
-    escalateWhen: 'Nausea or vomiting within hours of exposure, or cumulative event dose above 100 mSv.',
+    escalateWhen: 'You feel sick or vomit within a few hours, or the storm total goes above 100 mSv.',
     indicators: ['radiationDose'],
   };
 };
@@ -234,12 +237,12 @@ const cumulativeDose: Rule = (ctx) => {
     id: 'cumulative-dose',
     ruleId: 'cumulative-dose',
     level: frac >= 0.9 ? 'act' : 'monitor',
-    title: 'Cumulative radiation dose approaching career limit',
-    why: [`Mission dose ${fmt(total, 0)} mSv = ${fmt(frac * 100, 0)}% of the NASA 600 mSv career limit`],
+    title: 'Your total radiation is getting close to the lifetime limit',
+    why: [`You have received ${fmt(total, 0)} mSv this mission, ${fmt(frac * 100, 0)}% of NASA's 600 mSv lifetime limit`],
     systems: ['immune'],
     hazards: ['radiation'],
     guidanceIds: ['radiation-shelter'],
-    actions: ['Sleep and spend off-duty time in the most shielded areas', 'Review EVA plans with the flight surgeon'],
+    actions: ['Sleep and relax in the best-protected parts of the ship', 'Check spacewalk plans with the doctors on Earth'],
     escalateWhen: 'Above 90% of the career limit.',
     indicators: ['radiationDose'],
   };
@@ -263,22 +266,22 @@ const behavioralHealth: Rule = (ctx) => {
     id: 'behavioral',
     ruleId: 'behavioral-health',
     level,
-    title: 'Behavioral health alert: sleep, mood and stress pattern',
+    title: 'Your sleep, mood and stress need some care',
     why: [
-      `Poor sleep + low mood + high stress together on ${last5} of the last 5 days`,
+      `Poor sleep, low mood and high stress together on ${last5} of the last 5 days`,
       ...(badDays.length >= RULES.behavioralContactDays ? [`Pattern present on ${badDays.length} of the last 7 days`] : []),
-      'Isolation and distance from home are known contributors on long missions',
+      'Being far from home in a small space for a long time affects everyone',
     ],
     systems: ['behavioral'],
     hazards: ['isolation', 'distance'],
     guidanceIds: ['breathing', 'sleep-hygiene', 'connect-home', 'workload'],
     actions: [
-      'Do the 4-7-8 breathing exercise now (2 minutes)',
-      'Tell your Crew Medical Officer how you have been feeling',
-      'Schedule a private family or psychological conference (PFC/PPC)',
-      'Ask the crew to review your workload and keep a protected sleep window tonight',
+      'Do the 2-minute calm-breathing exercise now (4-7-8 breathing)',
+      'Tell your crew medical officer how you have been feeling',
+      'Book a private video call with your family or a counselor',
+      'Ask the crew to lighten your workload and give you a quiet sleep time tonight',
     ],
-    escalateWhen: 'Any thoughts of self-harm, or you cannot perform critical tasks. Tell your CMO immediately.',
+    escalateWhen: "If you have thoughts of hurting yourself, or can't do important tasks, tell your crew medical officer right away.",
     indicators: ['mood', 'stress', 'sleepHours', 'sleepQuality'],
   };
 };
@@ -295,24 +298,24 @@ const sansCluster: Rule = (ctx) => {
 
   const why: string[] = [];
   if (bpRising && sys) {
-    if (sys.pctFromBaseline !== null) why.push(`Systolic BP ${fmt(sys.value)} mmHg, ${fmt(sys.pctFromBaseline, 0)}% above your baseline`);
-    else why.push(`Systolic BP ${fmt(sys.value)} mmHg`);
-    if (sysSlope >= 0.8) why.push(`Rising about ${fmt(sysSlope, 1)} mmHg/day over the past week`);
+    if (sys.pctFromBaseline !== null) why.push(`Blood pressure ${fmt(sys.value)} mmHg, ${fmt(sys.pctFromBaseline, 0)}% higher than your normal`);
+    else why.push(`Blood pressure ${fmt(sys.value)} mmHg`);
+    if (sysSlope >= 0.8) why.push(`Going up about ${fmt(sysSlope, 1)} mmHg every day this week`);
   }
   if (headache) why.push('Headache reported in the last 3 days');
-  if (vision) why.push('Vision change reported in the last 3 days');
+  if (vision) why.push('Blurry or changed eyesight reported in the last 3 days');
 
   let level: StatusLevel | null = null;
   let title = '';
   if (bpRising && headache && vision) {
     level = 'critical';
-    title = 'SANS / cardiovascular check: rising BP + headache + vision change';
+    title = 'Eye and head pressure check: blood pressure rising, headaches and blurry vision';
   } else if (vision) {
     level = 'act';
-    title = 'Vision change: SANS eye check needed';
+    title = 'Your eyesight changed: do an eye check';
   } else if (bpRising && headache) {
     level = 'monitor';
-    title = 'Rising blood pressure with headache';
+    title = 'Blood pressure going up, with headaches';
   }
   if (!level) return null;
   return {
@@ -325,13 +328,13 @@ const sansCluster: Rule = (ctx) => {
     hazards: ['gravity', 'environment'],
     guidanceIds: ['sans-check', 'bp-recheck', 'co2'],
     actions: [
-      'Do the Amsler grid and near-vision chart test in the Guidance library and log the results',
-      'Recheck blood pressure in 15 minutes, seated and relaxed, then twice daily',
-      'Check the cabin CO₂ reading. If it is above 3 mmHg, ask the crew to increase scrubbing',
-      'Schedule an onboard eye exam (fundoscopy / OCT) with the CMO',
-      'Avoid heavy resistive exercise and Valsalva straining until reviewed',
+      'Do the eye-grid test and the reading-card test (Guidance → Eye self-check) and save the results',
+      'Check your blood pressure again in 15 minutes, sitting and relaxed, then twice a day',
+      'Look at the cabin air (CO₂) reading. If it is above 3, ask the crew to clean the air more',
+      'Ask your crew medical officer for an eye scan',
+      'Avoid heavy lifting and holding your breath while straining until a doctor has checked',
     ],
-    escalateWhen: 'Sudden vision loss, a severe headache, or BP at or above 180/120. This is an emergency.',
+    escalateWhen: "You suddenly can't see well, have a very bad headache, or blood pressure is 180/120 or higher. This is an emergency.",
     indicators: ['systolic', 'diastolic'],
   };
 };
@@ -350,22 +353,22 @@ const boneLoss: Rule = (ctx) => {
     id: 'bone',
     ruleId: 'bone-loss-proxy',
     level: massDown ? 'act' : 'monitor',
-    title: massDown ? 'Bone & muscle loss risk: low loading and mass decline' : 'Resistive exercise below target',
+    title: massDown ? 'Your bones and muscles may be getting weaker' : 'Not enough strength exercise',
     why: [
-      `Resistive exercise averaged ${fmt(avg)} min/day over 7 days (${fmt(adherence * 100)}% of the ${RULES.resistiveTargetMin}-min target)`,
-      ...(massDown ? [`Body mass down ${fmt(Math.abs(massPct), 1)}% since mission start`] : []),
-      'Weight-bearing bones can lose 1–1.5% of their mineral density per month without loading',
+      `Strength exercise was ${fmt(avg)} min a day this week (${fmt(adherence * 100)}% of the ${RULES.resistiveTargetMin}-min goal)`,
+      ...(massDown ? [`Your weight is down ${fmt(Math.abs(massPct), 1)}% since the start of the mission`] : []),
+      "Without gravity, bones in your hips and spine can lose 1–1.5% of their strength every month if you don't exercise",
     ],
     systems: ['musculoskeletal'],
     hazards: ['gravity'],
     guidanceIds: ['resistive', 'nutrition-bone', 'aerobic'],
     actions: [
-      'Return to the full resistive protocol: squat, deadlift and heel raise at prescribed loads',
+      'Go back to your full strength workout: squats, deadlifts and heel raises',
       'Ask the crew to protect your exercise block on the schedule',
-      'Eat your full calorie and protein ration, and take your vitamin D if prescribed',
-      'Measure body mass on the SLAMMD weekly',
+      'Eat all of your meals, including the protein, and take your vitamin D if you have it',
+      'Weigh yourself once a week',
     ],
-    escalateWhen: 'Body mass loss over 5%, or sudden back or flank pain.',
+    escalateWhen: 'You lose more than 5% of your weight, or get sudden pain in your back or side.',
     indicators: ['exerciseResistive', 'bodyMass'],
   };
 };
@@ -374,10 +377,10 @@ const infection: Rule = (ctx) => {
   const t = valueOn(ctx.series.temperature, ctx.day);
   if (t === undefined || t < RULES.feverForInfection) return null;
   const supporting: string[] = [];
-  if (hadSymptom(ctx, 'congestion', 2)) supporting.push('nasal congestion');
+  if (hadSymptom(ctx, 'congestion', 2)) supporting.push('a stuffy nose');
   if (hadSymptom(ctx, 'fever', 2)) supporting.push('chills / feeling feverish');
   const fatigue = valueOn(ctx.series.fatigue, ctx.day);
-  if (fatigue !== undefined && fatigue >= 4) supporting.push('high fatigue');
+  if (fatigue !== undefined && fatigue >= 4) supporting.push('strong tiredness');
   const rr = valueOn(ctx.series.respRate, ctx.day);
   if (rr !== undefined && rr >= 21) supporting.push(`breathing rate ${rr}/min`);
   if (!supporting.length) return null;
@@ -385,8 +388,8 @@ const infection: Rule = (ctx) => {
     id: 'infection',
     ruleId: 'possible-infection',
     level: t >= (ctx.thresholds.temperature.bands.critHigh ?? 39.5) ? 'critical' : 'act',
-    title: 'Possible infection',
-    why: [`Temperature ${fmt(t, 1)} °C with ${supporting.join(', ')}`],
+    title: 'You may be getting sick (possible infection)',
+    why: [`Your temperature is ${fmt(t, 1)} °C and you have ${supporting.join(', ')}`],
     systems: ['immune', 'lungs'],
     hazards: ['environment', 'isolation'],
     guidanceIds: ['infection', 'hydration'],
@@ -394,7 +397,7 @@ const infection: Rule = (ctx) => {
       'Recheck your temperature in 4 hours',
       'Wear a mask in shared modules and wipe down shared surfaces',
       'Drink at least 2.5 L of fluids today and rest',
-      'Ask the CMO about the onboard medical kit (antipyretic per protocol)',
+      'Ask your crew medical officer about fever medicine from the medical kit',
     ],
     escalateWhen: 'Temperature at or above 39.5 °C, fever beyond 48 h, or difficulty breathing.',
     indicators: ['temperature', 'respRate'],
@@ -410,16 +413,16 @@ const renalStone: Rule = (ctx) => {
     id: 'renal',
     ruleId: 'renal-stone-risk',
     level: back ? 'act' : 'monitor',
-    title: back ? 'Kidney stone warning: low fluids + back pain' : 'Low fluid intake: kidney stone risk',
+    title: back ? 'Kidney stone warning: not enough water and back pain' : 'Not drinking enough water: kidney stone risk',
     why: [
-      `Fluid intake below 2,000 mL for ${lowDays} days in a row (latest ${fmt(hyd[hyd.length - 1].value)} mL)`,
+      `You drank less than 2 liters a day for ${lowDays} days in a row (last: ${fmt(hyd[hyd.length - 1].value)} mL)`,
       ...(back ? ['Back or flank pain reported'] : []),
-      'Bone calcium released in microgravity plus low fluid raises kidney stone risk',
+      'In space your bones release calcium, and with too little water it can form kidney stones',
     ],
     systems: ['gi', 'musculoskeletal'],
     hazards: ['gravity', 'distance'],
     guidanceIds: ['hydration'],
-    actions: ['Drink one 250 mL bag every hour while awake today (target 2.5–3 L)', 'Note your urine colour. It should be pale.'],
+    actions: ['Drink one 250 mL drink bag every hour while awake today (aim for 2.5–3 liters)', 'Check your pee color. It should be pale yellow.'],
     escalateWhen: 'Severe one-sided flank pain, blood in urine, or fever with back pain.',
     indicators: ['hydration'],
   };
@@ -435,18 +438,18 @@ const cardioEmergency: Rule = (ctx) => {
     id: 'cardio-emergency',
     ruleId: 'cardiopulmonary-emergency',
     level: 'critical',
-    title: chest ? 'Chest pain: treat as an emergency' : 'Low oxygen with shortness of breath',
+    title: chest ? 'Chest pain: treat as an emergency' : 'Low oxygen and hard to breathe',
     why: [
       ...(chest ? ['Chest pain or pressure reported today'] : []),
-      ...(hypoxic ? [`SpO₂ ${spo2}% with shortness of breath`] : []),
+      ...(hypoxic ? [`Oxygen in your blood is ${spo2}% and you are short of breath`] : []),
     ],
     systems: ['cardio', 'lungs'],
     hazards: ['distance', 'environment'],
     guidanceIds: ['emergency-cardio'],
     actions: [
       'Stop all activity and alert the crew now',
-      'CMO: attach the ECG / monitor and record vitals every 5 minutes',
-      'Put on the oxygen mask if SpO₂ is below 92%',
+      'Medical officer: attach the heart monitor and check vital signs every 5 minutes',
+      'Put on the oxygen mask if blood oxygen is below 92%',
       'Follow the onboard cardiac emergency procedure from the medical checklist',
     ],
     escalateWhen: 'Now. Contact the flight surgeon and do not wait for the ground before starting the steps.',
@@ -463,21 +466,21 @@ const sleepDebt: Rule = (ctx) => {
     id: 'sleep-debt',
     ruleId: 'sleep-debt',
     level: 'act',
-    title: 'Sleep debt: fatigue risk for critical tasks',
+    title: 'Not enough sleep for several nights',
     why: [
-      `Under ${RULES.sleepDebtHours} h sleep for ${nights.length} nights in a row (≈${fmt(debt, 1)} h debt vs 8 h)`,
-      ...(rt && rt.level !== 'nominal' ? [`Reaction time is also slowed (${fmt(rt.value)} ms)`] : []),
+      `Less than ${RULES.sleepDebtHours} hours of sleep for ${nights.length} nights in a row (about ${fmt(debt, 1)} hours missing)`,
+      ...(rt && rt.level !== 'nominal' ? [`Your reactions are slower too (${fmt(rt.value)} ms)`] : []),
     ],
     systems: ['behavioral'],
     hazards: ['isolation', 'environment'],
     guidanceIds: ['sleep-hygiene', 'workload'],
     actions: [
-      'Protect an 8.5-hour sleep window tonight. Ask for a schedule shift if needed.',
-      'Use the circadian lighting "pre-sleep" mode for 2 h before bed',
+      'Get 8.5 hours in bed tonight. Ask to move tasks if you need to.',
+      'Switch the lights to the warm "bedtime" setting 2 hours before sleep',
       'Avoid caffeine within 6 h of sleep',
-      'Avoid scheduling EVA, docking or robotics until rested',
+      "Don't do spacewalks, docking or robot-arm work until you have rested",
     ],
-    escalateWhen: 'Microsleeps during critical tasks, or no improvement after 3 recovery nights.',
+    escalateWhen: "You nod off during important tasks, or don't feel better after 3 good nights.",
     indicators: ['sleepHours', 'sleepQuality'],
   };
 };
@@ -489,13 +492,13 @@ const motionSickness: Rule = (ctx) => {
     id: 'motion-sickness',
     ruleId: 'space-motion-sickness',
     level: 'monitor',
-    title: 'Nausea: possible space motion sickness',
-    why: ['Nausea reported today', ...(dizzy ? ['Dizziness reported too'] : [])],
+    title: 'Feeling sick to your stomach (space sickness)',
+    why: ['You said you feel sick to your stomach today', ...(dizzy ? ['You also feel dizzy'] : [])],
     systems: ['gi'],
     hazards: ['gravity'],
     guidanceIds: ['motion-sickness', 'hydration'],
-    actions: ['Keep your head still and align your body with the local "up"', 'Take small sips of fluid', 'Ask the CMO about anti-nausea medication per protocol'],
-    escalateWhen: 'Vomiting for more than 24 h, or nausea after a radiation spike.',
+    actions: ["Keep your head still and line your body up with the room's 'up'", 'Take small sips of water', 'Ask your crew medical officer about anti-sickness medicine'],
+    escalateWhen: 'You keep vomiting for more than a day, or feel sick after a radiation spike.',
     indicators: [],
   };
 };
@@ -513,7 +516,7 @@ const orthostatic: Rule = (ctx) => {
     systems: ['cardio'],
     hazards: ['gravity'],
     guidanceIds: ['orthostatic', 'hydration'],
-    actions: ['Sit or lie down before standing slowly', 'Drink 1 L of fluid with electrolytes (fluid loading)', 'Wear compression garments'],
+    actions: ['Sit or lie down, then stand up slowly', 'Drink 1 liter of water with salt tablets', 'Wear your tight compression clothing'],
     escalateWhen: 'Fainting or chest pain.',
     indicators: ['systolic'],
   };
@@ -590,8 +593,8 @@ function indicatorAlert(a: IndicatorAssessment): Alert {
     level: a.level,
     title:
       a.absoluteLevel === 'nominal'
-        ? `${meta.label}: abnormal for you`
-        : `${meta.label} ${a.absoluteLevel === 'critical' ? 'critical' : 'out of range'}`,
+        ? `${meta.label}: unusual for you`
+        : `${meta.label} ${a.absoluteLevel === 'critical' ? 'is at a dangerous level' : 'is outside the safe range'}`,
     why: a.reasons.length ? a.reasons : [`${meta.label} flagged`],
     systems: meta.systems,
     hazards: meta.hazards,

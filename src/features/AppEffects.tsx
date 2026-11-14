@@ -5,6 +5,7 @@ import { useTriage } from '@/hooks/useMission';
 import { useGroundLinkSimulator } from './ground/useGroundLink';
 import { useDeviceEffects } from '@/devices/useDeviceEffects';
 import { useCloudEffects } from '@/cloud/useCloudEffects';
+import { alertSound } from '@/utils/sound';
 
 /**
  * Background behaviours: smart schedule prompts, a one-time critical-alert nudge,
@@ -50,17 +51,26 @@ export function AppEffects() {
     return () => clearInterval(id);
   }, [tasks, enabled, toast]);
 
-  // On load / crew switch: nudge about the top alert and the pending check-in.
+  // On open / crew switch: tell the astronaut how they are (sound + toast), and nudge the check-in.
   useEffect(() => {
     if (!triage || nudged.current === triage.crewId) return;
-    nudged.current = triage.crewId;
-    const top = triage.alerts[0];
+    const crewId = triage.crewId;
     const t = setTimeout(() => {
+      if (nudged.current === crewId) return;
+      nudged.current = crewId;
+      const top = triage.alerts[0];
+      if (triage.overall === 'critical') {
+        alertSound('critical');
+        if ('Notification' in window && Notification.permission === 'granted') new Notification('VITALIS: get medical help now', { body: top?.title });
+      } else if (triage.overall === 'act') alertSound('act');
+      else if (triage.overall === 'nominal') alertSound('good');
       if (top && (top.level === 'critical' || top.level === 'act')) {
-        toast({ title: top.title, body: top.why[0], level: top.level, action: { label: 'See actions', route: `system/${top.systems[0]}` } });
+        toast({ title: top.title, body: top.why[0], level: top.level, action: { label: 'See what to do', route: `system/${top.systems[0]}` } });
+      } else if (triage.overall === 'nominal') {
+        toast({ title: 'All good today 💚', body: 'Everything looks normal for you.', level: 'nominal' });
       }
       const ci = tasks.find((x) => x.id === 'wake-vitals');
-      if (ci && !ci.done) toast({ title: 'Morning check-in due', body: 'About 3 minutes. Your baseline depends on it.', level: 'info', action: { label: 'Start', route: 'checkin' } });
+      if (ci && !ci.done) toast({ title: 'Morning check-in due', body: 'About 3 minutes. It keeps your "normal" up to date.', level: 'info', action: { label: 'Start', route: 'checkin' } });
     }, 1200);
     return () => clearTimeout(t);
   }, [triage, tasks, toast]);

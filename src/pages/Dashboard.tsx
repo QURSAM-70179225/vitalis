@@ -17,6 +17,7 @@ import { formatValue } from '@/utils/units';
 import { cn } from '@/utils';
 import { BodyMap } from '@/features/bodymap/BodyMap';
 import { RadiationPanel } from '@/features/radiation/RadiationPanel';
+import { StatusBanner } from '@/features/status/StatusBanner';
 import { SystemPanel } from '@/features/bodymap/SystemPanel';
 import { AlertCard } from '@/components/AlertCard';
 import { Disclaimer, Drawer, HazardIcon, Panel, ProgressRing, Sparkline, StatusBadge, readinessColor } from '@/components/ui';
@@ -63,6 +64,8 @@ export function Dashboard() {
           </button>
         </div>
       </header>
+
+      <StatusBanner triage={triage} name={crewMember.callsign} />
 
       {/* Core insight: comm delay */}
       {delaySec >= 30 && (

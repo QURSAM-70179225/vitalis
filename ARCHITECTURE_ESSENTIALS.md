@@ -45,4 +45,4 @@ Sensors (Bluetooth · USB/Wi-Fi suit · simulator)
 - **Cloud:** missions, profiles, check_ins, cognitive_results, journal_entries, vital_samples, alerts, packets, ground_messages, mission_events.
 
 ## Quality gates
-`npm run typecheck` · `npm run lint` · `npm test` (87) · `npm run build` · RLS SQL tests.
+`npm run typecheck` · `npm run lint` · `npm test` (103) · `npm run build` · RLS SQL tests.

@@ -34,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   timeWarp: 20,
   thresholdOverrides: {},
   tourSeen: false,
+  alertSound: true,
 };
 
 export interface Toast {

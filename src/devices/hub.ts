@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import type { ChannelId, ChannelValues, StatusLevel } from '@/types';
 import { emit } from '@/utils/bus';
+import { alertSound } from '@/utils/sound';
 import { uid } from '@/utils';
 import { CHANNELS, CHANNEL_IDS, rmssd } from './channels';
 import { BLE_PROFILES, parseBloodPressure, parseHeartRate, parsePlx, parseTemperature, parseWeight, type BleProfile } from './gatt';
@@ -88,19 +89,7 @@ function stopMinuteTimerIfIdle() {
 
 function beep(level: StatusLevel) {
   if (useDevices.getState().muted) return;
-  try {
-    const ctx = new AudioContext();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.frequency.value = level === 'critical' ? 880 : 620;
-    g.gain.value = 0.06;
-    o.connect(g).connect(ctx.destination);
-    o.start();
-    o.stop(ctx.currentTime + (level === 'critical' ? 0.6 : 0.25));
-    o.onended = () => void ctx.close();
-  } catch {
-    /* audio unavailable */
-  }
+  alertSound(level === 'critical' ? 'critical' : 'act');
 }
 
 export const useDevices = create<DeviceState>((set, get) => {
