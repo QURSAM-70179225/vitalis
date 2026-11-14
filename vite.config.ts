@@ -37,6 +37,8 @@ function swPrecache(): Plugin {
 export default defineConfig({
   plugins: [react(), swPrecache()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+  // Render (and similar hosts) run `npm start`: allow their web addresses.
+  preview: { allowedHosts: ['.onrender.com'] },
   build: {
     chunkSizeWarningLimit: 900,
   },
