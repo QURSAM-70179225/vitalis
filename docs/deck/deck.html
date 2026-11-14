@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>VITALIS – Demo deck</title>
+<style>
+  :root { --bg: #050a18; --panel: #0c1428; --line: rgba(148, 163, 184, 0.18); --text: #e2e8f0; --muted: #94a3b8; --accent: #22d3ee; --teal: #2dd4bf; --good: #34d399; --watch: #facc15; --act: #fb923c; --urgent: #f87171; --pink: #f472b6; }
+  @page { size: 1920px 1080px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: Inter, 'Inter Display', system-ui, sans-serif; }
+  .slide { width: 1920px; height: 1080px; position: relative; overflow: hidden; padding: 96px 120px; page-break-after: always; break-after: page;
+    background: radial-gradient(1200px 700px at 85% -10%, rgba(34, 211, 238, 0.13), transparent 60%), radial-gradient(900px 600px at -10% 110%, rgba(45, 212, 191, 0.10), transparent 60%), var(--bg); }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .stars { position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
+    background-image: radial-gradient(1.5px 1.5px at 12% 22%, #fff, transparent), radial-gradient(1px 1px at 33% 78%, #cbd5e1, transparent), radial-gradient(1.5px 1.5px at 61% 14%, #fff, transparent), radial-gradient(1px 1px at 79% 63%, #e2e8f0, transparent), radial-gradient(1px 1px at 91% 31%, #fff, transparent), radial-gradient(1.5px 1.5px at 47% 52%, #94a3b8, transparent), radial-gradient(1px 1px at 22% 91%, #fff, transparent), radial-gradient(1px 1px at 70% 92%, #cbd5e1, transparent), radial-gradient(1px 1px at 5% 60%, #fff, transparent); }
+  .content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; }
+  .eyebrow { font-size: 22px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 22px; }
+  h1 { font-family: 'Inter Display', Inter, sans-serif; font-size: 76px; line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
+  h2 { font-family: 'Inter Display', Inter, sans-serif; font-size: 60px; line-height: 1.08; font-weight: 700; letter-spacing: -0.015em; }
+  .lead { font-size: 30px; line-height: 1.45; color: var(--muted); margin-top: 22px; max-width: 1200px; }
+  .grad { background: linear-gradient(90deg, var(--accent), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .num { position: absolute; right: 120px; bottom: 56px; font-size: 20px; color: #475569; z-index: 2; letter-spacing: 0.1em; }
+  .brand { position: absolute; left: 120px; bottom: 56px; font-size: 20px; color: #475569; z-index: 2; letter-spacing: 0.32em; font-weight: 700; }
+  .shot { border-radius: 22px; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); display: block; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 34px 36px; }
+  .card h3 { font-size: 30px; font-weight: 700; margin-bottom: 10px; }
+  .card p { font-size: 23px; line-height: 1.45; color: var(--muted); }
+  .chip { display: inline-flex; align-items: center; gap: 12px; padding: 12px 24px; border-radius: 999px; font-size: 24px; font-weight: 700; border: 2px solid; }
+  .logo { display: inline-grid; place-items: center; width: 92px; height: 92px; border-radius: 26px; background: linear-gradient(135deg, var(--accent), var(--teal)); box-shadow: 0 0 60px rgba(34, 211, 238, 0.45); }
+  .row { display: flex; gap: 36px; }
+  .link { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- 1. Title -->
+<section class="slide"><div class="stars"></div>
+  <div class="content" style="justify-content:center; max-width: 1000px;">
+    <div style="display:flex; align-items:center; gap:28px; margin-bottom:46px;">
+      <span class="logo"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#05101f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></span>
+      <span style="font-size:58px; font-weight:800; letter-spacing:0.3em;">VITALIS</span>
+    </div>
+    <h1 style="font-size:72px;">Your health, your call,<br/><span class="grad">even when Earth is<br/>20 minutes away.</span></h1>
+    <p class="lead">Astronaut Health Command Center: an offline-first app that helps astronauts check their own health, spot risky trends early and know exactly what to do.</p>
+    <p style="margin-top:56px; font-size:24px; color:var(--muted);">Team <b style="color:var(--text)">LUNOVA CLOUDER</b> · 2026 NASA Space Apps Challenge · <i>Create Health Monitoring Software for Astronauts on Space Missions</i></p>
+  </div>
+  <img src="../screenshots/02-dashboard.png" class="shot" style="position:absolute; right:-160px; top:150px; width:1000px; opacity:0.92; transform: perspective(1600px) rotateY(-14deg);" alt="" />
+  <span class="num">1 / 7</span>
+</section>
+
+<!-- 2. Problem -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">The problem</p>
+    <h2>On the way to Mars, help is <span style="color:var(--act)">45 minutes</span> away.</h2>
+    <div class="row" style="margin-top:64px;">
+      <div class="card" style="flex:1;"><p style="font-size:84px; font-weight:800; color:var(--text); line-height:1;">4–22 min</p><h3 style="margin-top:18px;">one-way signal delay</h3><p>A question to a flight surgeon and the answer can take up to 45 minutes. On the ISS it takes seconds.</p></div>
+      <div class="card" style="flex:1;"><p style="font-size:84px; font-weight:800; color:var(--text); line-height:1;">0</p><h3 style="margin-top:18px;">resupply, quick way home</h3><p>NASA counts <b style="color:var(--text)">Distance from Earth</b> among the five hazards of human spaceflight: crews must act on their own.</p></div>
+      <div class="card" style="flex:1;"><p style="font-size:62px; font-weight:800; color:var(--text); line-height:1.15;">"BP 133/82"</p><h3 style="margin-top:18px;">raw numbers don't help</h3><p>A non-doctor needs to know: Is that bad? Why? What do I do now? When do I get help?</p></div>
+    </div>
+  </div>
+  <span class="brand">VITALIS</span><span class="num">2 / 7</span>
+</section>
+
+<!-- 3. Solution -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">Our solution</p>
+    <h2>Every reading becomes a clear next step.</h2>
+    <div style="display:flex; gap:56px; margin-top:56px; align-items:flex-start;">
+      <div style="width:620px; flex-shrink:0;">
+        <div style="display:flex; flex-direction:column; gap:18px; font-size:34px; font-weight:700;">
+          <div>① Status <span style="color:var(--muted); font-weight:500; font-size:26px;">How am I doing?</span></div>
+          <div>② Why <span style="color:var(--muted); font-weight:500; font-size:26px;">What VITALIS noticed</span></div>
+          <div>③ What to do <span style="color:var(--muted); font-weight:500; font-size:26px;">A tickable checklist</span></div>
+          <div>④ When to get help <span style="color:var(--muted); font-weight:500; font-size:26px;">Timed to Earth<span style="color:var(--muted); font-weight:500; font-size:26px;">Timed to the Earth delay</span>apos;s delay</span></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:46px;">
+          <span class="chip" style="color:var(--good); border-color:rgba(52,211,153,.5)">● All good</span>
+          <span class="chip" style="color:var(--watch); border-color:rgba(250,204,21,.5)">● Keep an eye on it</span>
+          <span class="chip" style="color:var(--act); border-color:rgba(251,146,60,.5)">● Take action today</span>
+          <span class="chip" style="color:var(--urgent); border-color:rgba(248,113,113,.5)">● Get medical help now</span>
+        </div>
+        <p style="margin-top:40px; font-size:24px; line-height:1.5; color:var(--muted);">Plain words, sound and vibration alarms, and an emergency "calm mode" checklist. Decision support, never a diagnosis.</p>
+      </div>
+      <img src="../screenshots/02-dashboard.png" class="shot" style="width:960px;" alt="VITALIS dashboard" />
+    </div>
+  </div>
+  <span class="brand">VITALIS</span><span class="num">3 / 7</span>
+</section>
+
+<!-- 4. How it decides -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">How it decides</p>
+    <h2>Transparent rules that know what is <span class="grad">normal for you.</span></h2>
+    <div style="display:flex; gap:56px; margin-top:52px; align-items:flex-start;">
+      <div style="display:flex; flex-direction:column; gap:24px; width:760px; flex-shrink:0;">
+        <div class="card"><h3>1 · Safe limits</h3><p>Every limit cites its source (NASA standards, clinical guidelines) and adapts to the mission, e.g. radiation for Mars vs the ISS.</p></div>
+        <div class="card"><h3>2 · Your personal baseline</h3><p>A 14-day average for each person catches "normal on paper, abnormal for you", and 3-day trends.</p></div>
+        <div class="card"><h3>3 · 11 combination rules</h3><p>Eye &amp; head pressure (SANS), solar storm, mood &amp; isolation, bone loss, sleep debt, infection, kidney stones and more, each linked to a NASA risk.</p></div>
+      </div>
+      <div>
+        <img src="../screenshots/03-body-map-panel.png" class="shot" style="width:820px;" alt="Body map with explanation" />
+        <p style="font-size:22px; color:var(--muted); margin-top:18px;">Tap an organ: why it was flagged, what to do, and "the doctors on Earth can answer in ~24 min at the earliest, start these steps now".</p>
+      </div>
+    </div>
+  </div>
+  <span class="brand">VITALIS</span><span class="num">4 / 7</span>
+</section>
+
+<!-- 5. Everyday use -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">Built for everyday life in space</p>
+    <h2>Measure, watch, understand, stay connected.</h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px 44px; margin-top:44px;">
+      <figure><img src="../screenshots/17-live-monitor.png" class="shot" style="width:100%; height:300px; object-fit:cover; object-position:top;" alt="" /><figcaption style="font-size:24px; margin-top:12px;"><b>Live Monitor:</b> suit, watch &amp; Bluetooth devices with instant alarms</figcaption></figure>
+      <figure><img src="../screenshots/14-health-journey.png" class="shot" style="width:100%; height:300px; object-fit:cover; object-position:top;" alt="" /><figcaption style="font-size:24px; margin-top:12px;"><b>Health Journey:</b> how space changes your body, day by day</figcaption></figure>
+      <figure><img src="../screenshots/16-report-scan.png" class="shot" style="width:100%; height:300px; object-fit:cover; object-position:right top;" alt="" /><figcaption style="font-size:24px; margin-top:12px;"><b>Scan a report:</b> numbers read from a photo, on the device</figcaption></figure>
+      <figure><img src="../screenshots/06-cmo-crew.png" class="shot" style="width:100%; height:300px; object-fit:cover; object-position:top;" alt="" /><figcaption style="font-size:24px; margin-top:12px;"><b>Crew &amp; Mission Control:</b> whole crew at a glance, alerts, messages</figcaption></figure>
+    </div>
+  </div>
+  <span class="brand">VITALIS</span><span class="num">5 / 7</span>
+</section>
+
+<!-- 6. NASA data -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">Measured by NASA's Curiosity rover on its way to Mars</p>
+    <h2>The demo's radiation is <span style="color:var(--pink)">real NASA data</span>.</h2>
+    <div style="display:flex; gap:52px; margin-top:48px; align-items:flex-start;">
+      <div style="width:1000px; flex-shrink:0;">
+        <img src="../screenshots/13-nasa-radiation.png" class="shot" style="width:100%;" alt="Curiosity RAD radiation chart" />
+        <div class="row" style="margin-top:26px; gap:24px;">
+          <div class="card" style="flex:1; padding:24px 28px;"><p style="font-size:44px; font-weight:800; color:var(--text);">15,358</p><p>readings over 218 days of the cruise to Mars</p></div>
+          <div class="card" style="flex:1; padding:24px 28px;"><p style="font-size:44px; font-weight:800; color:var(--text);">8 Mar 2012</p><p>real solar storm = demo day 42 → shelter alert</p></div>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <h3 style="font-size:30px; margin-bottom:20px;">All five challenge resources, used</h3>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:16px; font-size:23px; line-height:1.4; color:var(--muted);">
+          <li><b style="color:var(--text)">NASA 5 Hazards</b> tag every reading, alert and guide</li>
+          <li><b style="color:var(--text)">NASA HRP Risks</b> map each body area to its risk</li>
+          <li><b style="color:var(--text)">NASA HRP Research</b> shapes exercise, sleep and eye guides</li>
+          <li><b style="color:var(--text)">CSA Radiation Monitoring</b>: dosimeter check-ins, storm shelter, dose panel</li>
+          <li><b style="color:var(--text)">CSA Science in Space</b>: benefits on Earth</li>
+        </ul>
+        <p style="margin-top:26px; font-size:21px; color:#64748b;">NASA PDS data set MSL-M-RAD-3-RDR-V1.0 · every source listed in DATA_SOURCES.md</p>
+      </div>
+    </div>
+  </div>
+  <span class="brand">VITALIS</span><span class="num">6 / 7</span>
+</section>
+
+<!-- 7. Offline, impact, try it -->
+<section class="slide"><div class="stars"></div>
+  <div class="content">
+    <p class="eyebrow">Works with no internet · Helps on Earth too</p>
+    <h2>Saved on the device first. Sent to Earth when a link exists.</h2>
+    <div class="row" style="margin-top:50px; gap:30px;">
+      <div class="card" style="flex:1;"><h3>Fully offline</h3><p>Installs as an app on phone, tablet and laptop. All checks run on the device; uploads wait in a queue and send themselves when a link returns, like NASA's store-and-forward networking.</p></div>
+      <div class="card" style="flex:1;"><h3>Benefits on Earth</h3><p>Remote clinics, polar stations, ships and disaster zones: anywhere with no doctor nearby and a slow or missing connection.</p></div>
+      <div class="card" style="flex:1;"><h3>Built to be trusted</h3><p>114 unit tests, 21 database security checks, private journal only you can see, every threshold sourced, accessible design.</p></div>
+    </div>
+    <div style="margin-top:56px; display:flex; align-items:center; gap:40px;">
+      <div>
+        <p style="font-size:26px; color:var(--muted);">Try it now, no sign-up:</p>
+        <p style="font-size:38px; font-weight:700; margin-top:8px;" class="link">vitalis-eta-lac.vercel.app/?demo=1&amp;tour=1</p>
+        <p style="font-size:26px; color:var(--muted); margin-top:18px;">Code: <span class="link">github.com/QURSAM-70179225/vitalis</span></p>
+      </div>
+    </div>
+    <p style="margin-top:auto; padding-bottom:40px; font-size:17px; color:#475569;">Decision support, not diagnosis. Not endorsed by NASA or CSA. Prepared with SI assistance; screenshots are real captures of the app.</p>
+  </div>
+  <span class="num">7 / 7</span>
+</section>
+
+</body>
+</html>

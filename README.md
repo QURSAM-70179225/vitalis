@@ -128,6 +128,7 @@ Code: `src/cloud/sync.ts` (outbox, upload, download, real-time), `src/store/db.t
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Every resource, dataset, published value and library used: what, from where, where in the code, license |
 | [data/nasa/README.md](data/nasa/README.md) | The real NASA radiation dataset: source, method, citations, how to rebuild |
 | [LICENSE](LICENSE) | MIT license |
+| [docs/VITALIS-demo-deck.pdf](docs/VITALIS-demo-deck.pdf) | 7-slide demo deck (source: `docs/deck/deck.html`) |
 | [docs/OFFLINE_AND_DEVICES.md](docs/OFFLINE_AND_DEVICES.md) | User guide: install, offline use, device hand-off, watches, battery, alarm sounds |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Render, Netlify or Cloudflare Pages |
 | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Accounts setup · sensor integration |
