@@ -16,6 +16,10 @@ let ctx: AudioContext | null = null;
 let pending: AlertTone | null = null;
 let unlockHooked = false;
 let pendingVibrate: AlertTone | null = null;
+let pendingAt = 0;
+/** A blocked sound is only replayed if the first tap comes soon after it. */
+const PENDING_MAX_MS = 15_000;
+const active = new Set<OscillatorNode>();
 
 function hasInteracted(): boolean {
   const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
@@ -55,6 +59,8 @@ function play(tone: AlertTone): boolean {
     g.gain.exponentialRampToValueAtTime(tone === 'good' ? 0.05 : 0.08, t + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, t + p.dur);
     o.connect(g).connect(ac.destination);
+    active.add(o);
+    o.onended = () => active.delete(o);
     o.start(t);
     o.stop(t + p.dur + 0.02);
     t += p.dur + p.gap;
@@ -65,7 +71,13 @@ function play(tone: AlertTone): boolean {
 function hookUnlock() {
   if (unlockHooked) return;
   unlockHooked = true;
-  const unlock = () => {
+  const unlock = (e: Event) => {
+    // Tapping a "sound off"/"stop" control must never start the queued alarm; old alarms are dropped too.
+    const silencing = e.target instanceof Element && e.target.closest('[data-silence-alerts]') !== null;
+    if (silencing || Date.now() - pendingAt > PENDING_MAX_MS) {
+      pending = null;
+      pendingVibrate = null;
+    }
     if (pendingVibrate) vibrate(pendingVibrate);
     pendingVibrate = null;
     const ac = audio();
@@ -90,5 +102,27 @@ export function alertSound(tone: AlertTone): void {
   const ac = audio();
   if (ac && ac.state === 'suspended') void ac.resume().catch(() => undefined);
   if (!play(tone)) pending = tone;
-  if (pending || pendingVibrate) hookUnlock();
+  if (pending || pendingVibrate) {
+    pendingAt = Date.now();
+    hookUnlock();
+  }
+}
+
+/** Silence now: stop tones that are playing, cancel vibration and forget any queued alert. */
+export function stopAlertSound(): void {
+  pending = null;
+  pendingVibrate = null;
+  for (const o of active) {
+    try {
+      o.stop();
+    } catch {
+      /* already stopped */
+    }
+  }
+  active.clear();
+  try {
+    if ('vibrate' in navigator) navigator.vibrate(0);
+  } catch {
+    /* not supported */
+  }
 }

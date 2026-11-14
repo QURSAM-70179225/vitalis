@@ -12,6 +12,7 @@ import { downloadBlob, hashPasscode } from '@/utils';
 import { EnvironmentPicker } from './Onboarding';
 import { AccountPanel } from '@/features/account/AccountPanel';
 import { PageHeader, Panel } from '@/components/ui';
+import { stopAlertSound } from '@/utils/sound';
 
 const BAND_KEYS: (keyof ThresholdBands)[] = ['critLow', 'actLow', 'monLow', 'monHigh', 'actHigh', 'critHigh'];
 const BAND_LABEL: Record<keyof ThresholdBands, string> = { critLow: '🔴 ≤', actLow: '🟠 ≤', monLow: '🟡 ≤', monHigh: '🟡 ≥', actHigh: '🟠 ≥', critHigh: '🔴 ≥' };
@@ -132,7 +133,17 @@ export default function Settings() {
         <Section icon={Accessibility} title="Accessibility & prompts">
           <Toggle label="High-contrast mode" hint="Solid black and white with stronger borders" checked={s.highContrast} onChange={(v) => update({ highContrast: v })} />
           <Toggle label="Reduce motion" hint="Turns off animations (also follows your OS setting)" checked={s.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
-          <Toggle label="Alert sounds & vibration" hint="Beep for urgent alerts, a soft chime when all is good" checked={s.alertSound} onChange={(v) => update({ alertSound: v })} />
+          <div data-silence-alerts>
+            <Toggle
+              label="Alert sounds & vibration"
+              hint="Beep for urgent alerts, a soft chime when all is good"
+              checked={s.alertSound}
+              onChange={(v) => {
+                if (!v) stopAlertSound();
+                update({ alertSound: v });
+              }}
+            />
+          </div>
           <Toggle label="Smart prompts" hint="On-screen reminders at scheduled times" checked={s.notifications} onChange={(v) => update({ notifications: v })} />
           {'Notification' in window && Notification.permission !== 'granted' && (
             <button className="btn-ghost mt-2" onClick={() => Notification.requestPermission()}>

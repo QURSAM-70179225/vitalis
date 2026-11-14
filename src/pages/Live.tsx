@@ -78,7 +78,7 @@ export default function Live() {
         subtitle="Readings stream automatically from your suit, wearables and medical devices. Alarms fire within seconds, and one-minute averages are saved and synced to the ground team."
         actions={
           <>
-            <button className="btn-ghost" onClick={() => dev.setMuted(!muted)} aria-pressed={muted}>
+            <button className="btn-ghost" data-silence-alerts onClick={() => dev.setMuted(!muted)} aria-pressed={muted}>
               {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />} {muted ? 'Alarm sound off' : 'Alarm sound on'}
             </button>
             <button className="btn-primary" onClick={() => navigate('checkin')} disabled={!live}>

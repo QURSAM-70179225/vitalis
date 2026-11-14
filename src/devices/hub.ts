@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import type { ChannelId, ChannelValues, StatusLevel } from '@/types';
 import { emit } from '@/utils/bus';
-import { alertSound } from '@/utils/sound';
+import { alertSound, stopAlertSound } from '@/utils/sound';
 import { uid } from '@/utils';
 import { CHANNELS, CHANNEL_IDS, rmssd } from './channels';
 import { BLE_PROFILES, parseBloodPressure, parseHeartRate, parsePlx, parseTemperature, parseWeight, type BleProfile } from './gatt';
@@ -285,7 +285,10 @@ export const useDevices = create<DeviceState>((set, get) => {
       stopMinuteTimerIfIdle();
     },
     disconnectAll: () => get().sources.forEach((s) => get().disconnect(s.id)),
-    setMuted: (muted) => set({ muted }),
+    setMuted: (muted) => {
+      if (muted) stopAlertSound();
+      set({ muted });
+    },
   };
 });
 
