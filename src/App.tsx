@@ -30,6 +30,7 @@ const Live = lazy(() => import('@/pages/Live'));
 const Console = lazy(() => import('@/pages/Console'));
 const About = lazy(() => import('@/pages/About'));
 const Journey = lazy(() => import('@/pages/Journey'));
+const Devices = lazy(() => import('@/pages/Devices'));
 const Assistant = lazy(() => import('@/features/assistant/Assistant'));
 const Tour = lazy(() => import('@/features/tour/Tour'));
 
@@ -53,6 +54,7 @@ function Page() {
     case 'console': return <Console />;
     case 'about': return <About />;
     case 'journey': return <Journey />;
+    case 'devices': return <Devices />;
     case 'trends': return <Trends initial={param} />;
     case 'system': return <SystemDetail id={param} />;
     case 'cognitive': return <OwnDataGuard what="reaction tests or journal entries"><Cognitive /></OwnDataGuard>;

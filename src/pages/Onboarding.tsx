@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { isSyncBundle, describeAdded } from '@/engine/merge';
 import { Starfield } from '@/components/Starfield';
 import { motion } from 'framer-motion';
-import { ArrowRight, PlayCircle, Radiation, Radio, Rocket, Weight, WifiOff } from 'lucide-react';
+import { ArrowRight, PlayCircle, Radiation, Radio, Rocket, Smartphone, Weight, WifiOff } from 'lucide-react';
 import { useApp } from '@/store/useApp';
 import { ENVIRONMENT_LIST, commDelaySeconds, formatDelay } from '@/data/environments';
 import { HAZARD_LIST } from '@/data/hazards';
@@ -67,6 +68,24 @@ export function Onboarding() {
   const [callsign, setCallsign] = useState('');
   const [role, setRole] = useState('Mission Specialist');
   const [busy, setBusy] = useState(false);
+  const receiveSync = useApp((s) => s.receiveSync);
+  const toast = useApp((s) => s.toast);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  /** New phone/laptop: carry on from another device with a hand-off file (works offline). */
+  const continueFrom = async (f: File) => {
+    setBusy(true);
+    try {
+      const data: unknown = JSON.parse(await f.text());
+      if (!isSyncBundle(data) || !data.mission) throw new Error('Pick a hand-off file made with "Send to my other device".');
+      const r = await receiveSync(data);
+      toast({ title: `Welcome back to ${data.mission.name}`, body: `Copied ${describeAdded(r.added)} from your ${data.deviceName}.`, level: 'nominal' });
+      navigate('dashboard');
+    } catch (err) {
+      toast({ title: 'Could not use that file', body: err instanceof Error ? err.message : 'Invalid file', level: 'act' });
+      setBusy(false);
+    }
+  };
 
   const demo = async () => {
     setBusy(true);
@@ -109,6 +128,21 @@ export function Onboarding() {
                 <button className="btn-ghost btn-lg" onClick={() => setStep(1)}>
                   <Rocket className="h-5 w-5" aria-hidden /> Set up my mission
                 </button>
+                <button className="btn-ghost btn-lg" onClick={() => fileRef.current?.click()} disabled={busy}>
+                  <Smartphone className="h-5 w-5" aria-hidden /> Continue from my other device
+                </button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="sr-only"
+                  aria-label="Choose a hand-off file from your other device"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    e.target.value = '';
+                    if (f) void continueFrom(f);
+                  }}
+                />
               </div>
               <p className="mt-4 flex items-center gap-2 text-xs text-slate-400">
                 <WifiOff className="h-4 w-4" aria-hidden /> Works with no network. Data stays on this device in IndexedDB.

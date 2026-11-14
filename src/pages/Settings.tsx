@@ -220,6 +220,13 @@ export default function Settings() {
               <Trash2 className="h-4 w-4" aria-hidden /> Wipe all data
             </button>
           </div>
+          <p className="muted mt-3 text-xs">
+            Switching phone or laptop, or battery running low? Use{' '}
+            <a href="#/devices" className="font-semibold text-accent hover:underline">
+              Devices &amp; Sync
+            </a>{' '}
+            to merge data between your devices (Import JSON above replaces everything).
+          </p>
           <input
             ref={fileRef}
             type="file"

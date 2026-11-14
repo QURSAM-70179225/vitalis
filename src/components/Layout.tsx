@@ -15,6 +15,7 @@ import {
   Radio,
   Satellite,
   Settings as SettingsIcon,
+  Smartphone,
   ShieldAlert,
   Stethoscope,
   UserRound,
@@ -54,12 +55,13 @@ export const NAV: NavItem[] = [
   { id: 'crew', label: 'Crew', icon: Users },
   { id: 'ground', label: 'Ground Link', icon: Satellite },
   { id: 'achievements', label: 'Achievements', icon: Award },
+  { id: 'devices', label: 'Devices & Sync', icon: Smartphone },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
   { id: 'about', label: 'About & Sources', icon: Library },
 ];
 
 const CONSOLE_ITEM: NavItem = { id: 'console', label: 'Ground Console', icon: MonitorDot };
-const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'journey', 'crew', 'guidance', 'settings', 'about'];
+const GROUND_PAGES: PageId[] = ['console', 'dashboard', 'trends', 'journey', 'crew', 'guidance', 'devices', 'settings', 'about'];
 
 /** Navigation for the current account: Mission Control sees the console, not personal health pages. */
 export function useNav(): NavItem[] {

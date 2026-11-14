@@ -350,3 +350,27 @@ export interface OutboxItem {
   createdAt: string;
   tries: number;
 }
+
+/** Records that a hand-off file carries between a person's own devices. */
+export interface SyncTables {
+  crew: CrewMember[];
+  checkIns: CheckIn[];
+  cognitive: CognitiveResult[];
+  journal: JournalEntry[];
+  events: MissionEvent[];
+  attachments: Attachment[];
+  packets: GroundPacket[];
+  vitals: VitalSample[];
+  messages: GroundMessage[];
+  alerts: SharedAlert[];
+}
+
+/** Offline device hand-off file (phone ⇄ laptop ⇄ tablet), merged instead of replacing. */
+export interface SyncBundle extends SyncTables {
+  app: 'vitalis';
+  kind: 'sync';
+  version: 2;
+  exportedAt: string;
+  deviceName: string;
+  mission: Mission | null;
+}

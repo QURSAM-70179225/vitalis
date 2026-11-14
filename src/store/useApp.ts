@@ -14,11 +14,15 @@ import type {
   StatusLevel,
   GroundMessage,
   SharedAlert,
+  SyncBundle,
   SyncTable,
+  SyncTables,
   VitalSample,
 } from '@/types';
 import { emit } from '@/utils/bus';
-import { db, exportAll, importAll, wipeAll, type ExportBundle } from './db';
+import { db, exportAll, importAll, readSyncTables, wipeAll, writeSyncTables, type ExportBundle } from './db';
+import { mergeTables, type MergeResult } from '@/engine/merge';
+import { deviceName } from '@/utils/device';
 import { generateDemoData } from '@/data/seed';
 import { uid } from '@/utils';
 
@@ -84,6 +88,10 @@ interface AppState {
   wipe: () => Promise<void>;
   exportData: () => Promise<ExportBundle>;
   importData: (b: ExportBundle) => Promise<void>;
+  /** Offline hand-off file for another of your devices. */
+  exportSync: () => Promise<SyncBundle>;
+  /** Merge a hand-off file from another device (nothing on this device is removed). dryRun = preview only. */
+  receiveSync: (b: SyncBundle, dryRun?: boolean) => Promise<SyncPreview>;
   updateMission: (p: Partial<Mission>) => Promise<void>;
   updateSettings: (p: Partial<Settings>) => Promise<void>;
   setActiveCrew: (id: string) => Promise<void>;
@@ -104,6 +112,22 @@ interface AppState {
   lock: () => void;
   unlock: () => void;
 }
+
+export interface SyncPreview extends MergeResult {
+  /** This device had no mission yet and takes the file's mission. */
+  adoptsMission: boolean;
+  /** The file comes from a different mission than this device. */
+  otherMission: string | null;
+}
+
+/** Hand-off tables that map to cloud tables, for re-uploading your own rows when signed in. */
+const CLOUD_TABLE: Partial<Record<keyof SyncTables, SyncTable>> = {
+  checkIns: 'check_ins',
+  cognitive: 'cognitive_results',
+  journal: 'journal_entries',
+  vitals: 'vital_samples',
+  packets: 'packets',
+};
 
 export interface CloudStatus {
   userId: string | null;
@@ -337,6 +361,30 @@ export const useApp = create<AppState>((set, get) => ({
     await importAll(b);
     const data = await loadFromDb();
     set({ ...data });
+  },
+
+  exportSync: async () => {
+    const t = await readSyncTables();
+    return { app: 'vitalis', kind: 'sync', version: 2, exportedAt: new Date().toISOString(), deviceName: deviceName(), ...t };
+  },
+  receiveSync: async (b, dryRun = false) => {
+    const local = await readSyncTables();
+    const result = mergeTables(local, b);
+    const adoptsMission = !local.mission && !!b.mission;
+    const sameMission = (x: Mission, y: Mission) => (x.cloudId && y.cloudId ? x.cloudId === y.cloudId : x.name === y.name && x.startDate === y.startDate);
+    const otherMission = local.mission && b.mission && !sameMission(local.mission, b.mission) ? b.mission.name : null;
+    if (dryRun) return { ...result, adoptsMission, otherMission };
+    await writeSyncTables(result.writes, adoptsMission ? b.mission : null);
+    // Signed in: queue your own new records for upload too, so the ground team gets them.
+    const me = get().cloud.userId;
+    if (me) {
+      for (const [t, table] of Object.entries(CLOUD_TABLE) as [keyof SyncTables, SyncTable][]) {
+        for (const row of result.writes[t] as { id: string; crewId?: string }[]) if (row.crewId === me) mirror(table, row);
+      }
+    }
+    const data = await loadFromDb();
+    set({ ...data });
+    return { ...result, adoptsMission, otherMission };
   },
 
   updateMission: async (p) => {

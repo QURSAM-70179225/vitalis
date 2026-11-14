@@ -6,6 +6,7 @@ import { useGroundLinkSimulator } from './ground/useGroundLink';
 import { useDeviceEffects } from '@/devices/useDeviceEffects';
 import { useCloudEffects } from '@/cloud/useCloudEffects';
 import { alertSound } from '@/utils/sound';
+import { persistStorage, watchBattery } from '@/utils/device';
 
 /**
  * Background behaviours: smart schedule prompts, a one-time critical-alert nudge,
@@ -22,6 +23,35 @@ export function AppEffects() {
   useGroundLinkSimulator(); // simulated delay only for local/demo packets (see hook)
   useDeviceEffects();
   useCloudEffects();
+
+  // Fully offline: ask the browser to keep this app's data (no prompt in Chrome/Edge/Safari).
+  const hasMission = useApp((s) => !!s.mission && !s.mission.demo);
+  useEffect(() => {
+    if (hasMission && !/Firefox/.test(navigator.userAgent)) void persistStorage();
+  }, [hasMission]);
+
+  // Low battery: warn at 20% and 10% so data can be handed off to another device in time.
+  const warnedAt = useRef<number>(1);
+  useEffect(
+    () =>
+      watchBattery((b) => {
+        if (!b) return;
+        if (b.charging) {
+          warnedAt.current = 1;
+          return;
+        }
+        const step = b.level <= 0.1 ? 0.1 : b.level <= 0.2 ? 0.2 : 1;
+        if (step >= warnedAt.current) return;
+        warnedAt.current = step;
+        toast({
+          title: `Battery ${Math.round(b.level * 100)}%`,
+          body: 'Send your data to another device now so you can keep going if this one runs out.',
+          level: step <= 0.1 ? 'critical' : 'act',
+          action: { label: 'Send to another device', route: 'devices' },
+        });
+      }),
+    [toast],
+  );
 
   // Mission Control lands on the Ground Console.
   const role = useApp((s) => (s.mission?.demo ? null : s.cloud.role));

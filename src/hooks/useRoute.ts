@@ -20,14 +20,15 @@ export type PageId =
   | 'live'
   | 'console'
   | 'about'
-  | 'journey';
+  | 'journey'
+  | 'devices';
 
 export interface Route {
   page: PageId;
   param?: string;
 }
 
-const PAGES: PageId[] = ['dashboard', 'checkin', 'trends', 'system', 'cognitive', 'guidance', 'schedule', 'crew', 'ground', 'achievements', 'settings', 'camera', 'live', 'console', 'about', 'journey'];
+const PAGES: PageId[] = ['dashboard', 'checkin', 'trends', 'system', 'cognitive', 'guidance', 'schedule', 'crew', 'ground', 'achievements', 'settings', 'camera', 'live', 'console', 'about', 'journey', 'devices'];
 
 export function parseHash(hash: string): Route {
   const [page, param] = hash.replace(/^#\/?/, '').split('/');
