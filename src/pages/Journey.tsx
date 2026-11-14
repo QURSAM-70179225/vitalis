@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Eye, Pause, Play, TrendingDown, TrendingUp, TriangleAlert } from 'lucide-react';
-import type { SystemId } from '@/types';
+import { CheckCircle2, ClipboardCheck, Eye, Pause, Play, TrendingDown, TrendingUp, TriangleAlert } from 'lucide-react';
+import type { IndicatorId, SystemId } from '@/types';
+import { INDICATORS } from '@/data/indicators';
+import { formatValue } from '@/utils/units';
+import { navigate } from '@/hooks/useRoute';
 import { useApp } from '@/store/useApp';
 import { useCrewData, useMissionContext, useThresholds } from '@/hooks/useMission';
 import { SYSTEMS, SYSTEM_IDS } from '@/data/systems';
@@ -13,6 +16,8 @@ import { cn } from '@/utils';
 import { PageHeader, Panel, StatusBadge } from '@/components/ui';
 
 const RANGES = [30, 40, 60, 90] as const;
+/** Readings shown under the body while the replay plays. */
+const REPLAY_READINGS: IndicatorId[] = ['heartRate', 'systolic', 'spo2', 'sleepHours', 'mood', 'radiationDose'];
 
 const VERDICT = {
   good: { Icon: CheckCircle2, cls: 'border-nominal/40 bg-nominal/5', color: '#34d399', label: 'Looking good' },
@@ -80,6 +85,9 @@ export default function Journey() {
   const selEvent = evs.find((e) => e.day === selected);
   const levels = sel ? sel.systems : (Object.fromEntries(SYSTEM_IDS.map((s) => [s, 'nominal'])) as Record<SystemId, 'nominal'>);
   const hrOnDay = hr.filter((p) => p.day <= selected).at(-1)?.value ?? 60;
+  const units = useApp((s) => s.settings.units);
+  const dayCheckIn = checkIns.filter((c) => c.crewId === crewMember?.id && c.day === selected).at(-1);
+  const enoughDays = withData.length >= 2 && day > from;
 
   return (
     <>
@@ -194,34 +202,63 @@ export default function Journey() {
             {selEvent ? <span className="font-semibold text-white">{selEvent.label}. </span> : null}
             {sel?.hasData ? sel.topAlert ?? 'All body areas normal for you.' : 'No check-in on this day.'}
           </p>
-          <BodyMap levels={levels} heartRate={hrOnDay} onSelect={() => undefined} />
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              className="btn-primary btn-icon h-12 w-12 shrink-0"
-              onClick={() => {
-                if (!playing && selected >= day) setSelected(from);
-                setPlaying((p) => !p);
-              }}
-              aria-label={playing ? 'Pause replay' : 'Replay your journey day by day'}
-            >
-              {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-            </button>
-            <label className="sr-only" htmlFor="day-slider">
-              Day
-            </label>
-            <input
-              id="day-slider"
-              type="range"
-              min={from}
-              max={day}
-              value={selected}
-              onChange={(e) => {
-                setPlaying(false);
-                setSelected(Number(e.target.value));
-              }}
-            />
-            <span className="numeral w-16 shrink-0 text-right">SOL {selected}</span>
-          </div>
+          <p className="muted mb-3 text-xs">
+            Press <Play className="inline h-3 w-3" aria-hidden /> to watch your body day by day. Each organ shows how that body area was doing on that day (a glowing outline with “!” = needs attention), and the numbers below show that day&apos;s readings. Drag the slider to pick a day.
+          </p>
+          <BodyMap levels={levels} heartRate={hrOnDay} onSelect={(id) => navigate(`system/${id}`)} />
+          {enoughDays ? (
+            <>
+              <div className="mt-3 flex items-center gap-3">
+                <button
+                  className="btn-primary btn-icon h-12 w-12 shrink-0"
+                  onClick={() => {
+                    if (!playing && selected >= day) setSelected(from);
+                    setPlaying((p) => !p);
+                  }}
+                  aria-label={playing ? 'Pause replay' : 'Replay your journey day by day'}
+                >
+                  {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                </button>
+                <label className="sr-only" htmlFor="day-slider">
+                  Day
+                </label>
+                <input
+                  id="day-slider"
+                  type="range"
+                  className="min-w-0 flex-1 accent-cyan-400"
+                  min={from}
+                  max={day}
+                  value={selected}
+                  onChange={(e) => {
+                    setPlaying(false);
+                    setSelected(Number(e.target.value));
+                  }}
+                />
+                <span className="numeral w-16 shrink-0 text-right">SOL {selected}</span>
+              </div>
+              <dl className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6" aria-live={playing ? 'off' : 'polite'}>
+                {REPLAY_READINGS.map((id) => {
+                  const v = dayCheckIn?.values[id];
+                  return (
+                    <div key={id} className="rounded-lg bg-white/5 px-2 py-1.5 text-center">
+                      <dt className="muted truncate text-[11px]">{INDICATORS[id].short}</dt>
+                      <dd className="numeral text-sm">{v === undefined ? '–' : formatValue(id, v, units)}</dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </>
+          ) : (
+            <div className="mt-3 rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm">
+              <p className="font-semibold">The replay needs at least 2 days of check-ins.</p>
+              <p className="muted mt-1">
+                You have {withData.length} so far (SOL {day}). Do your check-in every day: from tomorrow you can press play and watch how your body changes. (The 90-day demo mission shows a full replay.)
+              </p>
+              <button className="btn-primary mt-3" onClick={() => navigate('checkin')}>
+                <ClipboardCheck className="h-4 w-4" aria-hidden /> Do today&apos;s check-in
+              </button>
+            </div>
+          )}
         </Panel>
 
         {/* What space is doing to your body */}
@@ -232,7 +269,9 @@ export default function Journey() {
           <p className="muted mb-4 text-sm">
             Your first days in this period (SOL {from}) compared with your latest days (SOL {day}).
           </p>
-          {changes.length ? (
+          {!enoughDays ? (
+            <p className="muted text-sm">This compares your first days with your latest days, so it needs at least 2 days of check-ins. Come back after a few more daily check-ins.</p>
+          ) : changes.length ? (
             <ul className="grid gap-3 sm:grid-cols-2">
               {changes.map((c) => (
                 <ChangeCard key={c.indicator} c={c} />

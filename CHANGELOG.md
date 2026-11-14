@@ -2,6 +2,16 @@
 
 All notable changes to VITALIS. Newest first.
 
+## 1.4.0 — Organ body map & working replay (November 2026)
+
+### Added
+- **Full human body with organs:** brain, eyes, windpipe, lungs, heart and main arteries, liver, stomach, intestines, bladder, spleen, lymph nodes and skeleton (front); spine, shoulder blades, lungs and kidneys (back). Shaded organs and a pointer-following tilt give a 3D look; the heart beats at your heart rate. Status shows as a glowing outline plus a "!" marker. Tap an organ to open that body area.
+- Health Journey replay explains what it does and shows each day's readings (heart, blood pressure, oxygen, sleep, mood, radiation) as it plays.
+
+### Fixed
+- The body outline was not symmetric, so organs did not line up; it is now drawn from one mirrored half.
+- With only one day of check-ins the replay and "How space is changing your body" did nothing; they now explain that 2+ days are needed and link to today's check-in.
+
 ## 1.3.1 — Photo scanning everywhere (November 2026)
 
 ### Added
