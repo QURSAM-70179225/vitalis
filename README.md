@@ -4,6 +4,10 @@
 
 Built for the **2026 NASA Space Apps Challenge**: *Create Health Monitoring Software for Astronauts on Space Missions*.
 
+**Live demo:** [vitalis-eta-lac.vercel.app/?demo=1&tour=1](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1)
+
+**At a glance:** works with no internet · installs as an app on phone, tablet and laptop · moves data between your devices without a network · reads your watch and medical devices over Bluetooth · beeps and vibrates when something is wrong · explains everything in plain words.
+
 ![Dashboard](docs/screenshots/02-dashboard.png)
 
 ---
@@ -22,14 +26,14 @@ Raw numbers alone don't help. A non-medical crew member looking at "BP 133/82" n
 
 …and it all works **fully offline**.
 
-| Status | Meaning |
-|---|---|
-| 🟢 **Nominal** | Within limits and within *your* personal baseline |
-| 🟡 **Monitor** | Drifting. Recheck and follow the guidance card |
-| 🟠 **Act Now** | Start the countermeasure today and inform your CMO |
-| 🔴 **Contact Flight Surgeon / Emergency** | Start the checklist now, and don't wait for the ground |
+| Status | Short label | Meaning |
+|---|---|---|
+| 🟢 **All good** | GOOD | Within safe limits and normal *for you* |
+| 🟡 **Keep an eye on it** | WATCH | Drifting. Recheck and follow the guide |
+| 🟠 **Take action today** | ACT | Start the countermeasure today and tell your crew medical officer |
+| 🔴 **Get medical help now** | URGENT | Start the checklist now; don't wait for Earth to answer |
 
-Every alert says **why** (for example *"Systolic BP 10% above your baseline, rising 1.5 mmHg/day, plus headache and vision change in the last 3 days"*). It also gives a tickable action checklist and a comm-delay-aware escalation line: *"Ground response in ~24 min at the earliest. Start these steps now."*
+Every alert says **why** in plain words (for example *"Blood pressure (top number) has been 10% higher than your normal for 3 days, plus headaches and blurry vision"*). It also gives a tickable action checklist and a comm-delay-aware escalation line: *"Ground response in ~24 min at the earliest. Start these steps now."*
 
 ### Try it in one click
 
@@ -46,6 +50,8 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | **Local / demo** | Everything on one device, fully offline. `?demo=1` loads the seeded Mars crew. | Nothing. Just `npm run dev`. |
 | **Real accounts** | Each astronaut **creates an account once**, data **syncs to Supabase**, and **Mission Control** follows the crew live from the **Ground Console**: realtime critical alerts, acknowledgements, messages to the crew. Still works offline: writes wait in an outbox and upload when a link exists. | Free Supabase project + run `supabase/schema.sql` + 2 lines in `.env`. See **[docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)**. |
 
+**On every device, even offline:** install VITALIS as an app on your phone, tablet or laptop. Every page works with no internet. When a battery runs low, send your data to another device by Bluetooth, Nearby Share, AirDrop or USB cable, with no network needed. See **[docs/OFFLINE_AND_DEVICES.md](docs/OFFLINE_AND_DEVICES.md)**.
+
 **Automatic measurement:** the **Live Monitor** connects standard **Bluetooth medical devices** (heart-rate straps, pulse oximeters, BP cuffs, thermometers, scales) and **suits/wearables over USB or Wi-Fi** using an open JSON-lines protocol. An ESP32 reference sketch and an EVA simulator with fault injection are included. See **[docs/SENSORS.md](docs/SENSORS.md)**.
 
 ### Project documents
@@ -55,8 +61,12 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md) | Problem, personas, user stories, functional & non-functional requirements, metrics, risks |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Full architecture: layers, flows, data model, security model, decisions |
 | [ARCHITECTURE_ESSENTIALS.md](ARCHITECTURE_ESSENTIALS.md) | One-page architecture summary |
-| [AGENTS.md](AGENTS.md) | Rules and commands for contributors |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Netlify or Cloudflare Pages |
+| [AGENTS.md](AGENTS.md) | Rules, commands and "where to change what" for contributors |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to set up, make a change and open a pull request |
+| [SECURITY.md](SECURITY.md) | Privacy and security model, keys, reporting a vulnerability |
+| [CHANGELOG.md](CHANGELOG.md) | What changed in each version |
+| [docs/OFFLINE_AND_DEVICES.md](docs/OFFLINE_AND_DEVICES.md) | User guide: install, offline use, device hand-off, watches, battery, alarm sounds |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel, Render, Netlify or Cloudflare Pages |
 | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) · [docs/SENSORS.md](docs/SENSORS.md) | Accounts setup · sensor integration |
 
 ---
@@ -68,7 +78,7 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 1 | **Daily check-in** (< 3 min) | 8-step wizard, 56-px glove-friendly controls (± buttons, slider, keyboard), live status chip per value, 3-minute timer. 16 indicators plus a 12-item symptom checklist. Every indicator has an **ⓘ How to measure in space** panel: steps, why it matters in spaceflight, normal range and NASA hazard tags. |
 | 2 | **Camera vitals** *(experimental)* | Webcam **rPPG** heart rate: forehead ROI (tracked with the Shape Detection API when available), green-channel average for 20 s, resampling, detrending, Hann window and FFT, a **0.7–3 Hz band-pass**, then the peak → bpm. Shows a live filtered waveform and a **confidence score**. A simulated-signal mode lets you demo it without a webcam. Plus an **image log** (skin, eye, ultrasound) attached to a body region. |
 | 3 | **Interactive body map** | Hand-built SVG figure, front and back. 8 clickable, keyboard-focusable systems coloured by status. The **heart pulses at your latest HR**, and flagged regions glow. The side panel shows what the system does, spaceflight effects, linked HRP hazards and risk, indicators with sparklines, explanation, actions and when to escalate. |
-| 4 | **Risk & triage engine** | Transparent and rule-based, with **103 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
+| 4 | **Risk & triage engine** | Transparent and rule-based, with **108 unit tests** in total. Layer A: absolute thresholds. Layer B: **personal baseline** (14-day mean/SD, \|z\| > 2, sustained 3-day trends), which catches *"normal on paper, abnormal for YOU"*. Layer C: **11 combination rules** (SANS cluster, behavioral health, solar particle event, bone-loss proxy, sleep debt, infection, kidney stone risk, and more). |
 | 5 | **Trends & analytics** | Recharts for all 19 indicators: shaded **normal band**, shaded **personal baseline band**, status-coloured points, **event markers** (EVA, solar event, illness, intervention), a 7/30/90-day toggle, and **correlation insights** (*"On days with <6 h sleep, your reaction time was 25% slower"*). |
 | 6 | **Cognitive & behavioral health** | 2-minute **PVT** reaction-time test (mean/median RT, lapses ≥500 ms, false starts, compared to baseline). **Mood journal** with private notes, a 5-item **isolation & confinement wellbeing score**, a *connect-with-home* reminder, and an animated **4-7-8 breathing** guide. |
 | 7 | **Countermeasures library** | 19 sourced protocol cards: resistive and aerobic exercise, nutrition, hydration, sleep under spacecraft lighting, **SPE storm-shelter protocol**, SANS self-check, motion sickness, infection control, medication safety, and more. Every flagged indicator links straight to its card. |
@@ -90,6 +100,10 @@ Then open **http://localhost:5173/?demo=1&tour=1**. This loads 90 days of seeded
 | 23 | **Plain language** | No medical training needed: simple names ("Oxygen in your blood", "Blood pressure (top number)", "Take action today"), plain explanations in every alert, and a **"Medical words made simple"** glossary. |
 | 24 | **Chatbot daily summary** | The assistant opens by telling you today's condition, your readings (✅ ⚠️ 🔴) and what to do today, and can answer *"How am I changing over time?"*. |
 | 25 | **Animated space background** | Twinkling, slowly drifting stars and the occasional shooting star (still when "reduce motion" is on). |
+| 26 | **Devices & offline sync** | Install as an app (button + app-icon shortcuts). Shows whether the device is ready to work offline, protects stored data from being cleared, shows battery. **Hand-off file** to your other phone/tablet/laptop by share sheet, Bluetooth, Nearby Share, AirDrop, USB or memory card: it **merges** (nothing deleted, safe to repeat). A brand-new device can **continue from your other device** on the welcome screen, offline. |
+| 27 | **Low-battery hand-off** | Warnings at 20 % and 10 % with a one-tap *Send to another device*, so a dead battery never stops monitoring. |
+| 28 | **Watch connection** | Reads heart rate from Garmin, Polar, Coros, Suunto, Wahoo, Amazfit and chest straps over Bluetooth, with per-brand instructions and a phone-camera fallback. |
+| 29 | **Reliable alarm sounds** | *Test beep*, a beep when the alarm is turned back on, danger alarms that repeat every 20 s, and instant silence when muted. |
 | – | **Calm mode** | For emergencies: strips the UI to one huge, high-contrast instruction checklist with *Alert CMO* and *Send packet* buttons. |
 
 ### The demo mission story (ARES-1, Mars Transit, SOL 90)
@@ -198,16 +212,19 @@ src/
   devices/      Bluetooth GATT parsers, telemetry protocol, device hub, live alarms, EVA simulator
   components/   Layout, AlertCard, ErrorBoundary, OwnDataGuard, Toasts, UI primitives
   features/     bodymap, checkin, trends, ground (packet/PDF/simulator), assistant, tour, calm
-  engine/       thresholds, baseline, triage, escalation, insights, schedule, gamification, pvt, rppg, assistant (+ *.test.ts)
+  engine/       thresholds, baseline, triage, escalation, insights, schedule, gamification, pvt, rppg,
+                assistant, journey, reportParser, wellbeing, radiation, merge (+ *.test.ts)
   data/         environments, hazards, systems, indicators, guidance, seed (demo generator)
   store/        Dexie DB + Zustand store
-  pages/        Onboarding, Dashboard, CheckIn, Camera, Trends, SystemDetail, Cognitive, Guidance,
-                Schedule, Crew, Ground, Achievements, Settings, LockScreen
+  pages/        Onboarding, Auth, Dashboard, Live, CheckIn, Camera, Trends, Journey, SystemDetail,
+                Cognitive, Guidance, Schedule, Crew, Ground, Console, Achievements, Devices, Settings,
+                About, LockScreen
   hooks/        useRoute (hash router), useMission (context, triage), useTasks
-  utils/        units, helpers, service-worker registration
+  utils/        units, helpers, event bus, alarm sounds, device (battery, storage, share), install, service worker
 public/         manifest, icons, sw.js (hand-written; precache list injected at build)
 supabase/       schema.sql (tables, RLS, invite-code functions) + tests/ (RLS checks on plain Postgres)
-docs/           SUPABASE_SETUP.md, SENSORS.md, hardware/ (ESP32 sketch), screenshots/
+docs/           OFFLINE_AND_DEVICES, DEPLOYMENT, SUPABASE_SETUP, SENSORS, hardware/ (ESP32 sketch), screenshots/
+render.yaml     Render Blueprint (static site + cache headers)
 ```
 
 ---
@@ -236,6 +253,10 @@ npm run lint         # ESLint (typescript-eslint, react-hooks)
 npm run build && npm run preview   # production build with service worker → http://localhost:4173
 ```
 
+### Deploy
+
+Push to GitHub, then import the repo in **Vercel** (zero config) or create a **Render** Blueprint (`render.yaml` is included). Full steps for Vercel, Render, Netlify and Cloudflare Pages: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+
 ### Real accounts (optional)
 
 ```bash
@@ -259,7 +280,7 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 ## Quality
 
 - **TypeScript strict**, no `any` (enforced by ESLint `no-explicit-any`). `npm run lint` is clean.
-- **103 Vitest tests** cover thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
+- **108 Vitest tests** cover the device hand-off merge, thresholds, baseline/z-score math, every combination rule, the full 90-day demo story, escalation timing, insights, the adaptive schedule, PVT scoring, rPPG recovery of 54–130 bpm from noisy jittery signals, gamification and assistant guardrails.
 - **Lighthouse** (production build, mobile emulation):
 
   | Page | Accessibility | Best practices | Performance |
@@ -272,9 +293,10 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
   | Ground link | 100 | 100 | 77 |
   | Mind | 100 | 100 | 86 |
 
-  Lighthouse 12 no longer has a PWA category. Installability and offline were verified directly: the web manifest has 192/512/maskable icons, the service worker precaches every built asset, and with the network cut the production build reloads and every page works.
+  Lighthouse 12 no longer has a PWA category. Installability and offline were verified directly: the web manifest has 192/512/maskable icons and shortcuts, the service worker precaches every built asset, and with the network cut the production build reloads and **all 20 pages work on desktop and phone sizes**. A two-device test confirms a brand-new device can start offline from a hand-off file.
+- **17 database security checks** (`supabase/tests/rls_test.sql`) run on plain PostgreSQL.
 - **Accessibility:** WCAG AA colours; status is never conveyed by colour alone (icon + text + colour); full keyboard support (body-map regions are focusable buttons); ARIA labels; skip link; focus management on navigation; reduced-motion and **high-contrast** modes; ≥ 44 px touch targets (56 px on check-in controls).
-- **Privacy:** all data stays in IndexedDB. Optional PBKDF2 passcode lock; JSON export/import; wipe all. Nothing leaves the device unless you tap *Send to Ground* (or enable the AI layer).
+- **Privacy:** all data stays in IndexedDB. Optional PBKDF2 passcode lock; JSON export/import; wipe all. Nothing leaves the device unless you tap *Send to Ground*, send a hand-off file, or enable the AI layer. See [SECURITY.md](SECURITY.md).
 - An **error boundary** around each page means one failing view can't take down the app.
 
 ## Screenshots
@@ -300,7 +322,9 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 - In **local/demo mode** the ground link and flight-surgeon replies are simulated. With Supabase, sync and messages are real but use the internet; a real mission would forward through DTN/Deep Space Network links.
 - Supabase's free plan is not certified for real patient data (e.g. HIPAA). Use made-up data for prototypes.
 - Live sensor broadcast uses Supabase Realtime Broadcast on the mission's private UUID channel. Stored data is protected by RLS; broadcast messages are not persisted.
-- Images in the image log stay on the device (not synced).
+- Images in the image log stay on the device (not synced to the cloud; they are included in hand-off files).
+- Hand-off files are not encrypted: send them only to your own devices. Battery level is only available in Chromium browsers (Chrome, Edge, Android).
+- With accounts, the first sign-in on a new device needs internet; after that it works offline.
 - Correlation insights are descriptive associations on small samples, not causal claims.
 
 ## Future work
@@ -308,7 +332,8 @@ The app is 100% functional without it. When enabled, only the rule-engine **summ
 - More sensors: actigraphy for sleep, continuous BP, ECG patches (and private Realtime channels for live streams).
 - **ML anomaly detection** (multivariate, e.g. isolation forest or LSTM autoencoders) alongside the rule engine, always with explanations.
 - **Artemis / Mars mission integration:** sync with vehicle telemetry (cabin CO₂, ppO₂, dosimetry, space-weather alerts) and the onboard medical kit inventory.
-- Crew-to-crew **mesh sync** and delay-tolerant networking (DTN/Bundle Protocol) for ground packets.
+- **Automatic nearby-device sync** (WebRTC on a local network) and passphrase-encrypted hand-off files, building on today's file hand-off.
+- Delay-tolerant networking (DTN/Bundle Protocol) for ground packets.
 - Validated psychometric instruments and flight-surgeon-configurable rule sets.
 - Multilingual support for international crews.
 

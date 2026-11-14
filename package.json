@@ -1,7 +1,7 @@
 {
   "name": "vitalis",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "VITALIS — Astronaut Health Command Center (NASA Space Apps 2026)",
   "type": "module",
   "scripts": {

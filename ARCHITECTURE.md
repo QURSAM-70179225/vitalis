@@ -44,7 +44,7 @@ flowchart LR
 | Offline | Hand-written service worker (`public/sw.js`) + Vite plugin injecting the precache list |
 | Backend (optional) | Supabase: Auth, Postgres with RLS, Realtime (postgres_changes + broadcast) |
 | Sensors | Web Bluetooth (GATT), Web Serial, WebSocket |
-| Tests | Vitest (103 tests), SQL RLS tests on plain PostgreSQL |
+| Tests | Vitest (108 tests), SQL RLS tests on plain PostgreSQL |
 | Routing | Minimal hash router (`src/hooks/useRoute.ts`) — works on any static host, no rewrites |
 
 ---
@@ -54,7 +54,9 @@ flowchart LR
 ```
 src/
   engine/      Pure domain logic + tests: thresholds, baseline, triage (11 rules), escalation,
-               insights, schedule, gamification, pvt, rppg (FFT), assistant (guard-railed text)
+               insights, schedule, gamification, pvt, rppg (FFT), assistant (guard-railed text),
+               journey (health map + body changes), reportParser, wellbeing, radiation,
+               merge (offline device hand-off)
   data/        Static domain data: environments, NASA HRP hazards, body systems, indicators,
                guidance cards, 90-day demo generator (seeded PRNG)
   devices/     Sensor layer: GATT parsers, JSON-lines protocol, channels + alarm limits,
@@ -66,7 +68,8 @@ src/
   pages/       Routed screens (lazy-loaded except Dashboard/Onboarding/Lock/Auth)
   components/  Layout (mission bar, role-aware nav), AlertCard, ErrorBoundary, OwnDataGuard, UI kit
   hooks/       useRoute, useMission (context, triage), useTasks
-  utils/       units, helpers (ids, PBKDF2, gzip), event bus, SW registration
+  utils/       units, helpers (ids, PBKDF2, gzip), event bus, SW registration, sound (alarm
+               tones + vibration), device (battery, storage persistence, share sheet), install
 supabase/      schema.sql + tests/ (RLS checks)
 public/        sw.js, manifest, icons
 docs/          SUPABASE_SETUP, SENSORS, DEPLOYMENT, hardware sketch, screenshots
@@ -160,6 +163,28 @@ local mode: no mission → Onboarding (or ?demo=1)
 
 ---
 
+### 5.6 Offline device hand-off (`src/engine/merge.ts`, `src/pages/Devices.tsx`)
+
+For moving between a person's own devices with **no internet** (phone battery dying, switching to a laptop):
+
+```
+Device A: Send → readSyncTables() → SyncBundle JSON → share sheet (Bluetooth / Nearby Share / AirDrop) or file download
+Device B: Receive → isSyncBundle() → mergeTables(local, incoming) [dry run → preview] → user confirms
+          → writeSyncTables() in one transaction → store reloads → (signed in) own rows mirrored to the outbox
+```
+
+- **Merge, never replace.** Health records are append-only, so the merge is a union by id. Records that move forward (packet status, message read, alert acknowledged) keep the more advanced copy. Merging is idempotent and order-independent, so the same file can be received twice.
+- A brand-new device can start from a hand-off file on the welcome screen (it adopts the mission).
+- Not included: settings, passcode, outbox. The file does include the private journal, so the UI says to send it only to your own devices.
+- **Battery:** `watchBattery()` (Battery Status API, Chromium) triggers toasts at 20 % and 10 % with a shortcut to hand off.
+- **Storage:** `navigator.storage.persist()` is requested once a real mission exists, so the browser does not evict health data.
+
+### 5.7 Alarm sounds (`src/utils/sound.ts`)
+
+Web Audio tones + `navigator.vibrate`. The `AudioContext` starts *suspended*; tones are played only after `resume()` resolves (playing before that is silently dropped). If audio is still blocked (no user gesture yet), the tone is queued and played on the next tap, unless that tap is on a silencing control (`data-silence-alerts`) or the tone is older than 15 s. Live danger alarms repeat every 20 s while active; muting stops tones and vibration at once.
+
+---
+
 ## 6. Data model
 
 ### 6.1 Local (IndexedDB, Dexie)
@@ -207,14 +232,18 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 - Client uses only the **anon/publishable key**; secret/service_role keys are refused by Supabase in browsers.
 - Passwords: Supabase Auth (hashed); optional local passcode lock (PBKDF2-SHA-256, 120k iterations).
 - Live sensor broadcast is not persisted and uses the mission's private UUID as channel name (move to private channels for production — see §10).
-- Verified by `supabase/tests/rls_test.sql` (16 checks).
+- Verified by `supabase/tests/rls_test.sql` (17 checks, including invite-code format).
+- Invite codes are generated with built-in `gen_random_uuid()` only (no `pgcrypto`, which Supabase installs in the `extensions` schema).
 
 ---
 
 ## 8. Offline & PWA
 
 - `public/sw.js`: precaches every built asset (list injected at build by the `vitalis-sw-precache` plugin in `vite.config.ts`), network-first navigations with cached shell fallback, cache-first static assets, stale-while-revalidate fonts, never caches cross-origin APIs. Cache matching uses `ignoreVary` (dev servers send `Vary: Origin`).
-- Manifest with 192/512/maskable icons; installable.
+- Manifest with 192/512/maskable icons, `id`, and app-icon shortcuts (Check-in, Live, Hand-off); installable. An **Install** button uses the captured `beforeinstallprompt` (`src/utils/install.ts`).
+- `ErrorBoundary` detects chunk-load failures after a redeploy and reloads once with a fresh cache; a *Repair app* button clears the app cache and service worker (never IndexedDB).
+- Host config: `/sw.js` and `index.html` must be served with `Cache-Control: no-cache` (set in `render.yaml`; Vercel revalidates by default).
+- Offline verified on the production build: all 20 routes on desktop and phone sizes with the network cut, plus a new device starting offline from a hand-off file.
 
 ---
 
@@ -222,9 +251,9 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 
 | Layer | How |
 |---|---|
-| Engine, devices, cloud mappers | `npm test` (Vitest, 103 tests, 12 files) |
+| Engine, devices, cloud mappers | `npm test` (Vitest, 108 tests, 13 files) |
 | Database security | `supabase/tests` on PostgreSQL 16 with an auth stub |
-| UI flows | Playwright scripts used during development: demo sweep, new-user flow, tour, offline reload, live alarms, console messaging, and accounts mode against a mocked Supabase API |
+| UI flows | Playwright scripts used during development: demo sweep, new-user flow, tour, offline reload of every route (desktop + phone), two-device offline hand-off, live alarms (tones counted), console messaging, and accounts mode against a mocked Supabase API |
 | Quality gates | `npm run typecheck`, `npm run lint`, `npm run build` |
 
 ---
@@ -242,9 +271,12 @@ RPCs (security definer): `create_mission`, `join_mission`, `mission_codes`, `ack
 | 7 | Separate live-alarm limits from triage thresholds | EVA/exercise physiology differs from resting check-ins | Two configs (`channels.ts`, `thresholds.ts`) |
 | 8 | Event bus between store, sensors and sync | Avoid import cycles; keep cloud optional | Writes are mirrored only when signed in |
 | 9 | Simulator for sensors and ground link | Demo without hardware or backend | Must keep simulator paths disabled in cloud mode |
+| 10 | Device hand-off by file, not peer-to-peer | Works on every browser and with no network (share sheet, Bluetooth, USB); no pairing server | Manual step; file is not encrypted (own devices only) |
+| 11 | Merge = union by id + "more advanced wins" | Records are append-only; makes merges idempotent and order-independent | Edits to existing records (none today) would need timestamps |
 
 ### Known limitations / next steps
 - Live broadcast → private Realtime channels with RLS authorization.
 - Image attachments → Supabase Storage with RLS.
 - Validate against a live Supabase project and real Bluetooth devices.
 - Server-side triage (Edge Function) for crews without the app open.
+- Encrypted hand-off files (passphrase, WebCrypto AES-GCM) and automatic nearby-device sync (WebRTC on a local network).

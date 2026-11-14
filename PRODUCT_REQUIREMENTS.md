@@ -95,19 +95,21 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 | **FR-29** | Status banner & alert sounds | Plain-language banner; chime when all good, repeating beep + vibration when urgent; replay button; setting to turn off. | ✅ |
 | **FR-30** | Plain language | Everyday names for statuses, measurements, body areas and alerts; glossary of medical words. | ✅ |
 | **FR-31** | Chatbot daily summary | Assistant opens with today's condition, readings and actions; answers progress-over-time questions. | ✅ |
+| **FR-32** | Devices & offline sync | Install as an app; offline readiness, storage protection and battery status; hand-off file between your own devices (share sheet, Bluetooth, USB) that merges without deleting and is safe to repeat; new device can start from a hand-off file offline; low-battery warnings at 20 %/10 %; connect a watch via Bluetooth heart rate. | ✅ (two-device offline test) 🧪 (real watches) |
+| **FR-33** | Reliable alarm sounds | Live alarms always audible after a tap; *Test beep*; beep when sound is turned back on; danger alarms repeat every 20 s; muting stops sound and vibration immediately. | ✅ |
 | **FR-23** | Settings & data | Units, high contrast, reduced motion, threshold editing, passcode lock, export/import/wipe, invite codes, sign out. | ✅ |
 
 ## 7. Non-functional requirements
 
 | Area | Requirement |
 |---|---|
-| **Offline** | Every feature works without a network after first load (service worker precache + IndexedDB). Verified by reloading the production build with the network cut. |
+| **Offline** | Every feature works without a network after first load (service worker precache + IndexedDB). Data can move between devices with no network. Verified on the production build: all 20 routes, desktop and phone, network cut. |
 | **Accessibility** | WCAG 2.1 AA; colour never the only signal (icon + text); keyboard operable; ≥ 44 px targets (56 px check-in controls); high-contrast and reduced-motion modes. Lighthouse accessibility 96–100. |
 | **Privacy** | Local mode: nothing leaves the device unless *Send to Ground*. Cloud mode: RLS enforced server-side; journals owner-only; no passwords in app tables; only the anon/publishable key in the client. |
 | **Security** | Roles cannot be self-assigned; invite codes hidden from crew; alert acknowledgements only via RPC by CMO/ground. |
 | **Reliability** | Error boundary per page; outbox retries with poison-item protection; idempotent upserts with device-generated IDs. |
 | **Performance** | Code-split pages; heavy libraries (charts, PDF) lazy-loaded; charts mount on scroll. |
-| **Quality** | TypeScript strict, no `any`; ESLint clean; 103 unit tests; RLS SQL tests. |
+| **Quality** | TypeScript strict, no `any`; ESLint clean; 108 unit tests; RLS SQL tests. |
 | **Safety** | Every screen states decision support, not diagnosis; thresholds carry sources; LLM output always followed by rule-engine triage. |
 
 ## 8. Success metrics
@@ -127,7 +129,8 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 |---|---|---|
 | **v1.0 — Hackathon** | FR-1 … FR-16, PWA, demo, docs | Done |
 | **v1.1 — Real app** | FR-17 … FR-23 (accounts, RLS, sync, sensors, Ground Console) | Done; needs validation on a live Supabase project and real devices |
-| **v1.2 — Next** | Deployment, live-project validation, image sync to Storage, private Realtime channels for live streams | Planned |
+| **v1.2 — Everyday use** | FR-24 … FR-33 (sources, journey, report scan, wellbeing, sounds, plain language, chatbot summary, devices & offline sync), Vercel/Render deployment | Done |
+| **v1.3 — Next** | Live-project validation, encrypted hand-off files, image sync to Storage, private Realtime channels for live streams | Planned |
 
 ## 10. Risks and mitigations
 
@@ -135,7 +138,9 @@ Status: ✅ implemented and tested · 🧪 implemented, needs real-world validat
 |---|---|
 | Misplaced trust in a non-certified tool | Disclaimers everywhere; "escalate when" on every alert; never diagnose |
 | False alarms from noisy sensors | Debounced alarms (3 s critical / 8 s act); physical range validation; personal baselines |
-| Data leakage between users | RLS tested with 16 SQL checks; column privileges; roles from invite codes |
+| Data leakage between users | RLS tested with 17 SQL checks; column privileges; roles from invite codes |
+| Device battery dies mid-mission | Low-battery warnings; offline hand-off file to another device; persistent storage |
+| Hand-off file shared with the wrong person | Clear warning that it contains the private journal; own devices only; encryption planned |
 | Data loss offline | IndexedDB outbox with retries; sign-out warns if uploads are pending |
 | Suit integration access | Open JSON-lines protocol; vendor bridge required for flight suits |
 | Browser support (Web Bluetooth/Serial) | Clear notices; Chrome/Edge required; simulator fallback |
