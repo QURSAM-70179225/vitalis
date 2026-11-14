@@ -339,9 +339,9 @@ function Journal() {
           <legend className="label">How are you coping? (1 = not at all, 5 = very much)</legend>
           <div className="space-y-3">
             {WB_QUESTIONS.map((q, qi) => (
-              <div key={q} className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm">{q}</span>
-                <div className="flex gap-1" role="radiogroup" aria-label={q}>
+              <div key={q} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
+                <span className="min-w-0 text-sm leading-snug">{q}</span>
+                <div className="flex shrink-0 gap-1" role="radiogroup" aria-label={q}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
