@@ -81,6 +81,7 @@ A change is done only when **all** of these pass: `npm run typecheck`, `npm run 
 | Offline / install / battery | `public/sw.js`, `vite.config.ts`, `src/utils/install.ts`, `src/utils/device.ts`, `src/pages/Devices.tsx` |
 | Hosting config | `render.yaml`, `docs/DEPLOYMENT.md`, `vite.config.ts` (`preview.allowedHosts`) |
 | Real NASA data | `scripts/nasa-data/` (download + build), `data/nasa/` (CSV + method), `src/data/nasa/` (generated module + tests); never hand-edit `mslRadCruise.ts`; list any new source in `DATA_SOURCES.md` |
+| Photo OCR (report scan) | `src/utils/ocr.ts`, `src/features/checkin/ReportScanner.tsx`, `vite.config.ts` (`tesseractAssets`: files served from `/tesseract/`, never a CDN), parsing in `src/engine/reportParser.ts` (+ test) |
 | Database function | `supabase/schema.sql` (built-in functions only: Supabase keeps extensions in the `extensions` schema), check in `supabase/tests/rls_test.sql` |
 
 ## Gotchas

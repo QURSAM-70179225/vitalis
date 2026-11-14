@@ -44,6 +44,7 @@ flowchart LR
 | Offline | Hand-written service worker (`public/sw.js`) + Vite plugin injecting the precache list |
 | Backend (optional) | Supabase: Auth, Postgres with RLS, Realtime (postgres_changes + broadcast) |
 | Sensors | Web Bluetooth (GATT), Web Serial, WebSocket |
+| Photo OCR | Tesseract.js 5 (lazy-loaded; worker, WebAssembly core and English model served from `/tesseract/` by a Vite plugin, cached by the service worker on first use); browser `TextDetector` first when available |
 | Tests | Vitest (112 tests), SQL RLS tests on plain PostgreSQL |
 | Routing | Minimal hash router (`src/hooks/useRoute.ts`) — works on any static host, no rewrites |
 

@@ -80,6 +80,7 @@ Every threshold has its source written next to it in `src/engine/thresholds.ts` 
 |---|---|
 | React, React DOM, Recharts, Framer Motion, Zustand, jsPDF, Supabase JS, Vite, Vitest, Tailwind CSS, ESLint | MIT |
 | Dexie, TypeScript | Apache-2.0 |
+| Tesseract.js 5 (photo OCR, runs on the device) and its English model `eng.traineddata` (best_int, from `@tesseract.js-data/eng`) | Apache-2.0 |
 | lucide-react icons | ISC |
 | Fonts: Inter, Space Grotesk, JetBrains Mono (Google Fonts) | SIL Open Font License 1.1 |
 | VITALIS code | MIT, see [LICENSE](LICENSE) |

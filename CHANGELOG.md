@@ -2,6 +2,11 @@
 
 All notable changes to VITALIS. Newest first.
 
+## 1.3.1 — Photo scanning everywhere (November 2026)
+
+### Added
+- **Scan a health report from a photo in every browser** (including Chrome/Edge on Windows): on-device text reading with Tesseract.js, with a progress bar. The reader (~7 MB) is served by VITALIS itself, downloaded on the first scan and kept for offline use. Photos are never uploaded.
+
 ## 1.3.0 — Real NASA data (November 2026)
 
 ### Added

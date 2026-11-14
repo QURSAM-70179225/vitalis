@@ -64,7 +64,11 @@ VITALIS reads heart rate straight from a watch over **Bluetooth**: no internet a
 
 Bluetooth needs **Chrome or Edge** on Android, Windows, macOS or ChromeOS. iPhone Safari does not support it. No watch? Use **Camera heart rate** (fingertip over the camera) or **scan a printed report** in Check-in. More detail: [SENSORS.md](SENSORS.md).
 
-## 6. Alarm sounds
+## 6. Scanning a report photo offline
+
+Check-in → **Scan a report** reads the numbers from a photo on the device itself (nothing is uploaded). The **first scan needs internet once** to download the text reader (about 7 MB); after that it works offline. Tip: scan one report while online after installing.
+
+## 7. Alarm sounds
 
 - Browsers only allow sound after you tap the page once. Tap anywhere after opening the app.
 - Live Monitor → **Test beep** checks your speaker.
@@ -72,7 +76,7 @@ Bluetooth needs **Chrome or Edge** on Android, Windows, macOS or ChromeOS. iPhon
 - Danger alarms repeat every 20 seconds until the reading is safe or you mute them.
 - All sounds and vibration can be turned off in *Settings → Alert sounds & vibration*.
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Problem | Fix |
 |---|---|
