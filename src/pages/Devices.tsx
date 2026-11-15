@@ -121,7 +121,7 @@ export default function Devices() {
       {low && (
         <div role="alert" className="panel mb-5 flex flex-wrap items-center gap-3 border-2 border-act/60 bg-act/10 p-4">
           <BatteryLow className="h-7 w-7 shrink-0 text-act" aria-hidden />
-          <p className="min-w-0 flex-1">
+          <p className="min-w-[220px] flex-1">
             <span className="font-semibold">Battery {Math.round(battery.level * 100)}%.</span> Send your data to another device now so you can carry on if this one runs out.
           </p>
           <button className="btn-primary" onClick={() => void send()} disabled={busy}>
