@@ -6,9 +6,15 @@ Built for the **2026 NASA Space Apps Challenge**: *Create Health Monitoring Soft
 
 **Live demo:** [vitalis-eta-lac.vercel.app/?demo=1&tour=1](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1)
 
+**Demo video (3 min):** every feature, step by step, with captions. Click the picture to watch.
+
+[![Watch the 3-minute VITALIS demo](docs/video/VITALIS-demo-3min.jpg)](docs/video/VITALIS-demo-3min.mp4)
+
 **At a glance:** works with no internet · installs as an app on phone, tablet and laptop · moves data between your devices without a network · reads your watch and medical devices over Bluetooth · beeps and vibrates when something is wrong · explains everything in plain words.
 
 > ### 🧑‍⚖️ Judges: start here (5 minutes, no sign-up)
+>
+> **Short on time?** [Watch the 3-minute demo video](docs/video/VITALIS-demo-3min.mp4): sign-in, guided tour, body map, check-in, solar-storm alarm, Health Journey, assistant, crew and ground views, offline use and the real NASA data, each with a caption.
 >
 > 1. **Open the [live demo](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1).** It loads a 90-day Mars-transit mission for a crew of 4 and a 60-second guided tour.
 > 2. **Dashboard:** the red *Get medical help now* banner → tap **Show me what to do** for the emergency checklist, timed to the Earth delay ("the doctors on Earth can answer in ~24 min at the earliest. Start these steps now").

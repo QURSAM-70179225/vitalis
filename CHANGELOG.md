@@ -7,6 +7,7 @@ All notable changes to VITALIS. Newest first.
 ### Added
 - **Waiting uploads panel** (Settings → Account & sync, opened from the top-bar sync badge): each stuck item in plain words, why the server refused it and how to fix it, with *Try again now* and *Remove*.
 - README: "Judges: start here" quick path and "What makes VITALIS different".
+- 3-minute captioned demo video of every feature (`docs/video/VITALIS-demo-3min.mp4`), linked from the top of the README and the judges' box.
 
 ### Changed
 - All README screenshots retaken from the current version, plus new ones for Health Journey, Live Monitor, report scan and Devices & Sync.
