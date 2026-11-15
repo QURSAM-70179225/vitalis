@@ -4,7 +4,7 @@
 
 Built for the **2026 NASA Space Apps Challenge**: *Create Health Monitoring Software for Astronauts on Space Missions*.
 
-**Live demo:** [vitalis-eta-lac.vercel.app/?demo=1&tour=1](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1)
+**Live demo:** [vitalis-ln1p.onrender.com/?demo=1&tour=1](https://vitalis-ln1p.onrender.com/?demo=1&tour=1)
 
 **Demo video (3 min):** every feature, step by step, with captions. Click the picture to watch.
 
@@ -16,7 +16,7 @@ Built for the **2026 NASA Space Apps Challenge**: *Create Health Monitoring Soft
 >
 > **Short on time?** [Watch the 3-minute demo video](docs/video/VITALIS-demo-3min.mp4): sign-in, guided tour, body map, check-in, solar-storm alarm, Health Journey, assistant, crew and ground views, offline use and the real NASA data, each with a caption.
 >
-> 1. **Open the [live demo](https://vitalis-eta-lac.vercel.app/?demo=1&tour=1).** It loads a 90-day Mars-transit mission for a crew of 4 and a 60-second guided tour.
+> 1. **Open the [live demo](https://vitalis-ln1p.onrender.com/?demo=1&tour=1).** It loads a 90-day Mars-transit mission for a crew of 4 and a 60-second guided tour.
 > 2. **Dashboard:** the red *Get medical help now* banner → tap **Show me what to do** for the emergency checklist, timed to the Earth delay ("the doctors on Earth can answer in ~24 min at the earliest. Start these steps now").
 > 3. **Body map:** tap the **eyes** (glowing with a "!") to see *why* VITALIS flagged them: blood pressure above *your* normal, rising every day, plus headaches and blurry vision.
 > 4. **Health Journey:** press ▶ to replay the last 40 days and watch the body change day by day.
